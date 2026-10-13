@@ -3,17 +3,24 @@ import {
   Briefcase, FileText, Trash2, PlayCircle, Loader2,
   Users, DollarSign, Calendar, Scale, AlertTriangle,
   ChevronRight, CheckSquare, List, MessageSquare, Shield,
-  ArrowRight, Sparkles, Building2, Tag, CheckCircle2, ChevronDown
+  ArrowRight, Sparkles, Building2, Tag, CheckCircle2, ChevronDown,
+  FileDiff, ScrollText
 } from 'lucide-react'
 import { useStore } from '../store/useStore'
 import { documentsApi, analysisApi } from '../lib/api'
 import DocumentUpload from '../components/DocumentUpload'
 import RiskFlags from '../components/RiskFlags'
 import ChatInterface from '../components/ChatInterface'
+import AsymmetryDetector from '../components/AsymmetryDetector'
+import RedlineStudio from '../components/RedlineStudio'
+import NegotiationMemo from '../components/NegotiationMemo'
 import clsx from 'clsx'
 
 const TABS = [
   { id: 'overview', label: 'Overview', icon: Briefcase },
+  { id: 'asymmetries', label: 'Clause Asymmetries', icon: Scale },
+  { id: 'redline', label: 'Redline Studio', icon: FileDiff },
+  { id: 'memo', label: 'Negotiation Memo', icon: ScrollText },
   { id: 'parties', label: 'Parties & Terms', icon: Users },
   { id: 'clauses', label: 'Key Clauses', icon: List },
   { id: 'risks', label: 'Risk Assessment', icon: AlertTriangle },
@@ -64,6 +71,7 @@ export default function MAndA() {
   const [activeTab, setActiveTab] = useState('overview')
   const [analysisLoading, setAnalysisLoading] = useState(false)
   const [analysisError, setAnalysisError] = useState(null)
+  const [redlineClause, setRedlineClause] = useState('4.3')
 
   useEffect(() => {
     fetchDocuments()
@@ -107,6 +115,19 @@ export default function MAndA() {
     }
   }
 
+  const handleJumpToRedline = (clauseName) => {
+    if (clauseName && clauseName.includes('6.2')) {
+      setRedlineClause('6.2')
+    } else if (clauseName && clauseName.toLowerCase().includes('mac')) {
+      setRedlineClause('mac')
+    } else if (clauseName && clauseName.toLowerCase().includes('compete')) {
+      setRedlineClause('non-compete')
+    } else {
+      setRedlineClause('4.3')
+    }
+    setActiveTab('redline')
+  }
+
   const result = currentAnalysis?.result
 
   const riskBadgeClass = {
@@ -118,94 +139,88 @@ export default function MAndA() {
   return (
     <div className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-7.5rem)] max-w-7xl mx-auto font-sans text-canvas-text">
       {/* ── Left Panel: Vault & Document Selection Ledger ───────────── */}
-      <div className="w-full lg:w-80 flex-shrink-0 flex flex-col gap-4">
-        <DocumentUpload module="ma" onUploaded={handleSelectDoc} />
+      <div className="w-full lg:w-80 flex-shrink-0 flex flex-col gap-4 overflow-y-auto">
+        <DocumentUpload module="ma" onUploaded={(doc) => handleSelectDoc(doc)} />
 
-        <div className="card flex-1 overflow-hidden flex flex-col bg-white">
-          <div className="px-4 py-3 border-b border-canvas-border flex items-center justify-between bg-canvas-bg">
-            <div className="flex items-center gap-2">
-              <FileText className="w-3.5 h-3.5 text-canvas-textMuted" />
-              <span className="font-serif text-sm font-normal text-canvas-text">Contract Vault</span>
-            </div>
-            <span className="text-[10px] font-mono text-canvas-textMuted bg-white px-2 py-0.5 rounded border border-canvas-border">
-              {documents.length} docs
-            </span>
+        <div className="card p-4 space-y-3 bg-white">
+          <div className="flex items-center justify-between">
+            <span className="section-title">Indexed Contracts ({documents.length})</span>
+            {documentsLoading && <Loader2 className="w-3 h-3 animate-spin text-neutral-400" />}
           </div>
 
-          <div className="overflow-y-auto flex-1 p-2 space-y-1">
-            {documentsLoading ? (
-              <div className="space-y-2 p-1">
-                {[1, 2, 3].map(i => <div key={i} className="skeleton h-12 rounded" />)}
-              </div>
-            ) : documents.length === 0 ? (
-              <div className="text-center py-12 text-canvas-textMuted px-4 space-y-1.5">
-                <FileText className="w-6 h-6 mx-auto text-canvas-border" />
-                <p className="font-serif text-xs text-canvas-text">No Contracts Indexed</p>
-                <p className="text-[11px] text-canvas-textLight">Upload an agreement above to begin.</p>
-              </div>
-            ) : (
-              documents.map(doc => (
+          <div className="space-y-1.5 max-h-[calc(100vh-25rem)] overflow-y-auto pr-0.5">
+            {documents.map(doc => {
+              const isSelected = selectedDocument?.id === doc.id
+              return (
                 <div
                   key={doc.id}
-                  onClick={() => doc.status === 'ready' && handleSelectDoc(doc)}
+                  onClick={() => handleSelectDoc(doc)}
                   className={clsx(
-                    'group flex items-start gap-2.5 p-3 rounded-lg transition-all select-none',
-                    doc.status === 'ready' ? 'cursor-pointer hover:bg-neutral-50' : 'cursor-not-allowed opacity-50',
-                    selectedDocument?.id === doc.id
-                      ? 'bg-neutral-100 border border-neutral-300 shadow-sm'
-                      : 'border border-transparent'
+                    'p-3 rounded-lg cursor-pointer transition-all border text-xs group relative',
+                    isSelected
+                      ? 'bg-neutral-100/80 border-black text-black font-medium shadow-xs'
+                      : 'bg-white border-canvas-border hover:bg-neutral-50 hover:border-neutral-300 text-canvas-text'
                   )}
                 >
-                  <FileText className={clsx(
-                    'w-4 h-4 mt-0.5 flex-shrink-0 transition-colors',
-                    selectedDocument?.id === doc.id ? 'text-black' : 'text-canvas-textMuted'
-                  )} />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-canvas-text truncate">{doc.original_name}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      {doc.status === 'ready' && <span className="badge-low text-[9px]">Ready</span>}
-                      {doc.status === 'processing' && (
-                        <span className="flex items-center gap-1 text-[9px] text-canvas-textMuted font-medium">
-                          <Loader2 className="w-2.5 h-2.5 animate-spin text-black" />
-                          Indexing
-                        </span>
-                      )}
-                      {doc.status === 'error' && <span className="badge-high text-[9px]">Error</span>}
-                      <span className="text-[10px] text-canvas-textMuted font-mono">{doc.page_count}p</span>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <FileText className={clsx('w-3.5 h-3.5 flex-shrink-0', isSelected ? 'text-black' : 'text-neutral-400')} />
+                      <p className="font-medium truncate">{doc.original_name}</p>
                     </div>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleDeleteDoc(doc); }}
+                      className="opacity-0 group-hover:opacity-100 text-neutral-400 hover:text-red-600 transition-opacity p-0.5"
+                      title="Delete contract"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
                   </div>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); handleDeleteDoc(doc) }}
-                    className="opacity-0 group-hover:opacity-100 text-canvas-textMuted hover:text-risk-high transition-all p-1"
-                    title="Delete document"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+
+                  <div className="flex items-center gap-2 mt-2 text-[10px] text-canvas-textMuted font-mono">
+                    <span>{doc.page_count} pages</span>
+                    <span>·</span>
+                    <span>{doc.chunk_count} clauses</span>
+                    <span>·</span>
+                    <span className={clsx(
+                      doc.status === 'ready' ? 'text-emerald-700' :
+                        doc.status === 'processing' ? 'text-amber-700' : 'text-red-700'
+                    )}>
+                      {doc.status}
+                    </span>
+                  </div>
                 </div>
-              ))
+              )
+            })}
+
+            {documents.length === 0 && !documentsLoading && (
+              <div className="text-center py-8 text-neutral-400">
+                <FileText className="w-6 h-6 mx-auto mb-1.5 opacity-40" />
+                <p className="text-xs">No documents uploaded yet</p>
+                <p className="text-[11px] text-neutral-400 mt-0.5">Upload a PDF or DOCX to begin diligence</p>
+              </div>
             )}
           </div>
         </div>
       </div>
 
-      {/* ── Right Panel: Due Diligence Console (Matching Screenshot 2) ── */}
-      <div className="flex-1 min-w-0 flex flex-col">
+      {/* ── Right Panel: Diligence Review Console ────────────────────── */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {!selectedDocument ? (
-          <div className="flex-1 card flex flex-col items-center justify-center text-center p-12 bg-white">
-            <Briefcase className="w-12 h-12 mb-3 text-neutral-300" />
-            <h3 className="font-serif text-xl font-normal text-canvas-text mb-1">Select Agreement to Audit</h3>
-            <p className="text-xs text-canvas-textMuted max-w-md">
-              Choose an agreement from your Contract Vault or upload a new transaction PDF to execute automated due diligence.
+          <div className="card flex-1 flex flex-col items-center justify-center text-center p-8 text-canvas-textMuted bg-white">
+            <Briefcase className="w-12 h-12 text-neutral-300 mb-3" />
+            <h3 className="font-serif text-xl font-normal text-canvas-text mb-1">Contract Intelligence Console</h3>
+            <p className="text-xs text-canvas-textMuted max-w-sm">
+              Select an agreement from the sidebar vault or upload a new transaction draft to begin audit.
             </p>
           </div>
         ) : (
-          <div className="flex-1 flex flex-col overflow-hidden">
-            {/* Matter Header Banner from Screenshot 2 */}
-            <div className="card p-5 mb-4 bg-white space-y-3 flex-shrink-0">
+          <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+            {/* Agreement Workspace Header */}
+            <div className="card p-5 mb-4 space-y-3 bg-white">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                  <div className="flex items-center gap-2 text-[11px] text-canvas-textMuted font-mono">
-                    <span>Matter Ref #: M&A-{(selectedDocument.id || '2026').slice(0, 8).toUpperCase()}</span>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 text-xs text-canvas-textMuted font-mono">
+                    <span>Matter Ref #: M&A-{selectedDocument.id.slice(0, 6).toUpperCase()}</span>
                     <span>·</span>
                     <span className="text-black font-semibold">Active Review</span>
                   </div>
@@ -239,7 +254,7 @@ export default function MAndA() {
                 </div>
               </div>
 
-              {/* Attached Document Pill & Overview Tags (Matching Screenshot 2) */}
+              {/* Source Pill & Overview Tags */}
               <div className="flex items-center gap-2 flex-wrap pt-1 border-t border-canvas-borderSubtle">
                 <span className="text-[11px] text-canvas-textMuted font-medium">Source:</span>
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-canvas-bg border border-canvas-border text-xs text-canvas-text font-medium shadow-sm">
@@ -263,14 +278,14 @@ export default function MAndA() {
               </div>
             )}
 
-            {/* Clean White Tabs Bar (Matching Screenshot 2) */}
+            {/* Clean White Tabs Bar */}
             <div className="flex gap-2 border-b border-canvas-border mb-4 flex-shrink-0 overflow-x-auto select-none bg-canvas-bg pb-1">
               {TABS.map(({ id, label, icon: Icon }) => (
                 <button
                   key={id}
                   onClick={() => setActiveTab(id)}
                   className={clsx(
-                    'flex items-center gap-1.5 px-4 py-2 text-xs font-medium rounded-t-md transition-all whitespace-nowrap',
+                    'flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium rounded-t-md transition-all whitespace-nowrap',
                     activeTab === id
                       ? 'bg-white text-black font-semibold border-t-2 border-black shadow-sm'
                       : 'text-canvas-textMuted hover:text-black hover:bg-neutral-100'
@@ -278,6 +293,11 @@ export default function MAndA() {
                 >
                   <Icon className="w-3.5 h-3.5" />
                   <span>{label}</span>
+                  {id === 'asymmetries' && (
+                    <span className="text-[10px] font-mono px-1.5 py-0.2 rounded font-bold ml-1 bg-red-100 text-red-700">
+                      New
+                    </span>
+                  )}
                   {id === 'risks' && result?.risk_flags?.length > 0 && (
                     <span className={clsx(
                       'text-[10px] font-mono px-1.5 py-0.2 rounded font-bold ml-1',
@@ -319,7 +339,7 @@ export default function MAndA() {
                     )
                   ) : (
                     <>
-                      {/* Executive Summary in Clean White Card */}
+                      {/* Executive Summary */}
                       {result.executive_summary && (
                         <div className="card p-6 space-y-3 bg-white">
                           <div className="flex items-center gap-2 pb-2.5 border-b border-canvas-borderSubtle">
@@ -373,7 +393,31 @@ export default function MAndA() {
                 </div>
               )}
 
-              {/* ── PARTIES TAB ──────────────────────────────────── */}
+              {/* ── ASYMMETRY DETECTOR TAB ──────────────────────── */}
+              {activeTab === 'asymmetries' && (
+                <AsymmetryDetector
+                  asymmetries={result?.asymmetric_clauses || []}
+                  onSelectRedline={handleJumpToRedline}
+                />
+              )}
+
+              {/* ── REDLINE STUDIO TAB ──────────────────────────── */}
+              {activeTab === 'redline' && (
+                <RedlineStudio
+                  documentId={selectedDocument.id}
+                  initialClause={redlineClause}
+                />
+              )}
+
+              {/* ── NEGOTIATION MEMO TAB ────────────────────────── */}
+              {activeTab === 'memo' && (
+                <NegotiationMemo
+                  documentId={selectedDocument.id}
+                  documentTitle={selectedDocument.original_name}
+                />
+              )}
+
+              {/* ── PARTIES TAB ─────────────────────────────────── */}
               {activeTab === 'parties' && result && (
                 <div className="space-y-5 animate-fade-in">
                   <div className="card p-6 space-y-4 bg-white">
@@ -417,7 +461,7 @@ export default function MAndA() {
                 </div>
               )}
 
-              {/* ── CLAUSES TAB ──────────────────────────────────── */}
+              {/* ── CLAUSES TAB ─────────────────────────────────── */}
               {activeTab === 'clauses' && result && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5 animate-fade-in">
                   <ClauseCard title="Conditions Precedent" items={result.conditions_precedent} icon={CheckSquare} />
@@ -429,13 +473,14 @@ export default function MAndA() {
                 </div>
               )}
 
-              {/* ── RISKS TAB ────────────────────────────────────── */}
+              {/* ── RISKS TAB ───────────────────────────────────── */}
               {activeTab === 'risks' && (
                 <div className="animate-fade-in">
                   {result ? (
                     <RiskFlags
                       riskFlags={result.risk_flags || []}
                       overallRisk={result.overall_risk_level || 'UNKNOWN'}
+                      onSelectRedline={handleJumpToRedline}
                     />
                   ) : (
                     <div className="card p-12 text-center text-canvas-textMuted space-y-2 bg-white">
@@ -447,7 +492,7 @@ export default function MAndA() {
                 </div>
               )}
 
-              {/* ── CHAT TAB ─────────────────────────────────────── */}
+              {/* ── CHAT TAB ────────────────────────────────────── */}
               {activeTab === 'chat' && (
                 <div className="card overflow-hidden h-[560px] animate-fade-in bg-white">
                   <ChatInterface

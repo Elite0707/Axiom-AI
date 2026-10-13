@@ -117,6 +117,13 @@ def run_ma_analysis(document_id: str, document_name: str) -> Dict[str, Any]:
     raw_output = llm.invoke(prompt)
     data = _safe_parse_json(str(raw_output))
 
+    # Structural clause asymmetries detector
+    try:
+        from services.deal_intelligence import detect_deal_asymmetries
+        asymmetries = detect_deal_asymmetries(document_id, context)
+    except Exception:
+        asymmetries = []
+
     return {
         "deal_title": data.get("deal_title") or document_name,
         "deal_type": data.get("deal_type", "M&A Agreement"),
@@ -133,6 +140,7 @@ def run_ma_analysis(document_id: str, document_name: str) -> Dict[str, Any]:
         "mac_clauses": data.get("mac_clauses", []),
         "termination_rights": data.get("termination_rights", []),
         "risk_flags": data.get("risk_flags", []),
+        "asymmetric_clauses": asymmetries,
         "overall_risk_level": data.get("overall_risk_level", "MEDIUM"),
         "executive_summary": data.get("executive_summary", "Analysis completed."),
         "key_recommendations": data.get("key_recommendations", []),

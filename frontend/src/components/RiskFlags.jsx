@@ -32,7 +32,9 @@ const levelConfig = {
   },
 }
 
-export default function RiskFlags({ riskFlags = [], overallRisk = 'UNKNOWN' }) {
+import { FileDiff } from 'lucide-react'
+
+export default function RiskFlags({ riskFlags = [], overallRisk = 'UNKNOWN', onSelectRedline }) {
   const config = levelConfig[overallRisk] || levelConfig.UNKNOWN
 
   const highCount = riskFlags.filter(f => f.risk_level === 'HIGH').length
@@ -101,9 +103,9 @@ export default function RiskFlags({ riskFlags = [], overallRisk = 'UNKNOWN' }) {
                 {flags.map((flag, i) => (
                   <div
                     key={i}
-                    className="card p-4 hover:border-neutral-400 transition-colors bg-white shadow-sm"
+                    className="card p-4 hover:border-neutral-400 transition-colors bg-white shadow-sm space-y-2.5"
                   >
-                    <div className="flex items-start justify-between gap-3 mb-2">
+                    <div className="flex items-start justify-between gap-3">
                       <div className="flex items-center gap-2.5 flex-wrap">
                         <span className="font-serif text-sm font-normal text-canvas-text">
                           {flag.clause}
@@ -121,6 +123,23 @@ export default function RiskFlags({ riskFlags = [], overallRisk = 'UNKNOWN' }) {
                     <p className="text-xs text-canvas-text-muted leading-relaxed font-sans">
                       {flag.description}
                     </p>
+
+                    {/* Action Bar with Generate Standard Buyer Redline Button */}
+                    <div className="pt-2 border-t border-neutral-100 flex items-center justify-between">
+                      <span className="text-[10px] text-neutral-400 font-mono">
+                        Identified in transaction diligence
+                      </span>
+
+                      {onSelectRedline && (
+                        <button
+                          onClick={() => onSelectRedline(flag.clause)}
+                          className="btn-secondary text-[11px] py-1 px-2.5 hover:bg-black hover:text-white transition-all flex items-center gap-1.5 shadow-xs"
+                        >
+                          <FileDiff className="w-3.5 h-3.5" />
+                          <span>Generate Standard Buyer Redline</span>
+                        </button>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>

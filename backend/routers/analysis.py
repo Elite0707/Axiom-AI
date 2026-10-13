@@ -99,3 +99,39 @@ async def get_analyses_for_document(document_id: str, db: AsyncSession = Depends
         .order_by(Analysis.created_at.desc())
     )
     return result.scalars().all()
+
+
+# ─── Deal Intelligence Endpoints ─────────────────────────────────────────────
+
+from pydantic import BaseModel
+
+class RedlineRequest(BaseModel):
+    document_id: str
+    clause_query: str = "4.3"
+    perspective: str = "buyer"
+
+class NegotiationMemoRequest(BaseModel):
+    document_id: str
+    perspective: str = "buyer"
+    doc_title: str = "M&A Agreement"
+
+
+@router.get("/asymmetries/{document_id}")
+async def get_deal_asymmetries(document_id: str):
+    """Detect structural deal asymmetries between counterparties."""
+    from services.deal_intelligence import detect_deal_asymmetries
+    return detect_deal_asymmetries(document_id)
+
+
+@router.post("/redline")
+async def generate_redline(req: RedlineRequest):
+    """Generate professional redline with additions and strikethroughs."""
+    from services.deal_intelligence import generate_clause_redline
+    return generate_clause_redline(req.document_id, req.clause_query, req.perspective)
+
+
+@router.post("/negotiation-memo")
+async def get_negotiation_memo(req: NegotiationMemoRequest):
+    """Generate 1-page tactical negotiation brief for lead partners."""
+    from services.deal_intelligence import generate_negotiation_memo
+    return generate_negotiation_memo(req.document_id, req.perspective, req.doc_title)
