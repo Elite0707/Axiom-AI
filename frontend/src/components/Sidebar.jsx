@@ -1,150 +1,236 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import {
-  Briefcase,
+  Bell,
+  Search,
+  Plus,
+  Bot,
+  Database,
+  LayoutGrid,
+  MoreHorizontal,
   FileText,
-  Scale,
-  Shield,
-  Layers,
+  Clock,
+  FolderGit2,
   ChevronLeft,
   ChevronRight,
-  Sparkles,
-  Database
+  ShieldAlert,
+  Sparkles
 } from 'lucide-react'
 import { useStore } from '../store/useStore'
 import clsx from 'clsx'
 
-const navItems = [
-  { to: '/dashboard', icon: Layers, label: 'Overview' },
-  { to: '/ma', icon: Briefcase, label: 'M&A Due Diligence', badge: 'ACTIVE' },
-  { to: '/reports', icon: FileText, label: 'Reports & Audits' },
-]
-
-const upcomingModules = [
-  { icon: Scale, label: 'Contract Intelligence' },
-  { icon: Shield, label: 'Compliance & GDPR' },
-  { icon: Database, label: 'Vault (Multi-Doc)' },
-]
-
 export default function Sidebar() {
-  const { sidebarCollapsed, toggleSidebar } = useStore()
+  const { sidebarCollapsed, toggleSidebar, documents, setSelectedDocument } = useStore()
+  const navigate = useNavigate()
+
+  const handleSelectRecent = (doc) => {
+    setSelectedDocument(doc)
+    navigate('/ma')
+  }
 
   return (
     <aside
       className={clsx(
-        'flex flex-col bg-harvey-charcoal border-r border-harvey-border select-none transition-all duration-300 relative flex-shrink-0',
+        'flex flex-col bg-sidebar-bg border-r border-sidebar-border select-none transition-all duration-300 relative flex-shrink-0 z-20 text-sidebar-text',
         sidebarCollapsed ? 'w-16' : 'w-64'
       )}
     >
-      {/* Brand Header */}
+      {/* Top Header: Logo + Bell + Search */}
       <div className={clsx(
-        'flex items-center gap-3 px-5 py-5 border-b border-harvey-border/80',
+        'flex items-center justify-between px-5 pt-5 pb-3',
         sidebarCollapsed && 'justify-center px-0'
       )}>
-        <div className="w-8 h-8 rounded border border-harvey-border flex items-center justify-center bg-harvey-surface flex-shrink-0 shadow-sm">
-          <span className="font-serif text-base font-semibold text-harvey-ivory">A</span>
-        </div>
-        {!sidebarCollapsed && (
-          <div className="min-w-0">
-            <div className="flex items-center gap-1.5">
-              <span className="font-serif text-lg tracking-tight text-harvey-ivory font-normal">:Axiom:</span>
-              <span className="bg-harvey-surface text-harvey-gold text-[9px] font-medium tracking-wider uppercase px-1.5 py-0.5 rounded border border-harvey-border">PRO</span>
+        {!sidebarCollapsed ? (
+          <>
+            <span className="font-serif text-2xl font-normal tracking-tight text-white">
+              Axiom
+            </span>
+            <div className="flex items-center gap-1.5 text-sidebar-muted">
+              <button className="p-1 hover:text-white transition-colors rounded hover:bg-sidebar-hover">
+                <Bell className="w-4 h-4" />
+              </button>
+              <button className="p-1 hover:text-white transition-colors rounded hover:bg-sidebar-hover">
+                <Search className="w-4 h-4" />
+              </button>
             </div>
-            <p className="text-[10px] text-harvey-muted uppercase tracking-[0.08em] font-medium">Legal Intelligence</p>
-          </div>
+          </>
+        ) : (
+          <span className="font-serif text-xl font-normal text-white">A</span>
         )}
       </div>
 
-      {/* Navigation Sections */}
-      <nav className="flex-1 px-3 py-4 space-y-6 overflow-y-auto">
-        <div>
-          {!sidebarCollapsed && (
-            <p className="section-title px-2.5 mb-2">Practice Areas</p>
+      {/* "+ New Thread / New Diligence" Action Button */}
+      <div className="px-3 py-2">
+        <NavLink
+          to="/ma"
+          className={clsx(
+            'flex items-center gap-2 rounded-lg bg-sidebar-hover hover:bg-sidebar-active text-white text-xs font-medium px-3 py-2 transition-all border border-sidebar-border',
+            sidebarCollapsed && 'justify-center px-0'
           )}
-          <div className="space-y-1">
-            {navItems.map(({ to, icon: Icon, label, badge }) => (
-              <NavLink
-                key={to}
-                to={to}
-                className={({ isActive }) => clsx(
-                  'flex items-center gap-3 px-3 py-2 rounded text-xs transition-all duration-150 group relative',
-                  isActive
-                    ? 'bg-harvey-surface text-harvey-ivory font-medium border border-harvey-border shadow-sm'
-                    : 'text-harvey-muted hover:text-harvey-ivory hover:bg-harvey-surface/60 border border-transparent',
-                  sidebarCollapsed && 'justify-center px-0 py-2.5'
-                )}
-              >
-                <Icon className={clsx('w-4 h-4 flex-shrink-0 transition-colors', 'text-harvey-muted group-hover:text-harvey-ivory')} />
-                {!sidebarCollapsed && (
-                  <>
-                    <span className="flex-1 truncate tracking-tight">{label}</span>
-                    {badge && (
-                      <span className="text-[9px] font-medium text-harvey-gold bg-harvey-gold/10 px-1.5 py-0.5 rounded border border-harvey-gold/20">
-                        {badge}
-                      </span>
-                    )}
-                  </>
-                )}
-                {/* Collapsed Tooltip */}
-                {sidebarCollapsed && (
-                  <div className="absolute left-full ml-2 px-2.5 py-1 bg-harvey-charcoal border border-harvey-border rounded text-[11px] text-harvey-ivory whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 shadow-elevated">
-                    {label}
-                  </div>
-                )}
-              </NavLink>
-            ))}
+        >
+          <Plus className="w-4 h-4 flex-shrink-0" />
+          {!sidebarCollapsed && <span>New Diligence</span>}
+        </NavLink>
+      </div>
+
+      {/* Main Navigation Items */}
+      <nav className="flex-1 px-3 py-2 space-y-5 overflow-y-auto overflow-x-hidden text-xs">
+        <div className="space-y-0.5">
+          <NavLink
+            to="/dashboard"
+            className={({ isActive }) => clsx(
+              'flex items-center gap-3 px-3 py-2 rounded-md transition-colors',
+              isActive
+                ? 'bg-sidebar-active text-white font-medium'
+                : 'text-sidebar-muted hover:text-white hover:bg-sidebar-hover',
+              sidebarCollapsed && 'justify-center px-0'
+            )}
+          >
+            <LayoutGrid className="w-4 h-4 flex-shrink-0" />
+            {!sidebarCollapsed && <span>Command Center</span>}
+          </NavLink>
+
+          <NavLink
+            to="/ma"
+            className={({ isActive }) => clsx(
+              'flex items-center gap-3 px-3 py-2 rounded-md transition-colors',
+              isActive
+                ? 'bg-sidebar-active text-white font-medium'
+                : 'text-sidebar-muted hover:text-white hover:bg-sidebar-hover',
+              sidebarCollapsed && 'justify-center px-0'
+            )}
+          >
+            <Bot className="w-4 h-4 flex-shrink-0" />
+            {!sidebarCollapsed && <span>M&A Agents</span>}
+          </NavLink>
+
+          <div
+            className={clsx(
+              'flex items-center gap-3 px-3 py-2 rounded-md text-sidebar-muted/60 cursor-not-allowed',
+              sidebarCollapsed && 'justify-center px-0'
+            )}
+          >
+            <Database className="w-4 h-4 flex-shrink-0" />
+            {!sidebarCollapsed && <span>Vaults</span>}
+          </div>
+
+          <div
+            className={clsx(
+              'flex items-center gap-3 px-3 py-2 rounded-md text-sidebar-muted/60 cursor-not-allowed',
+              sidebarCollapsed && 'justify-center px-0'
+            )}
+          >
+            <MoreHorizontal className="w-4 h-4 flex-shrink-0" />
+            {!sidebarCollapsed && <span>More</span>}
           </div>
         </div>
 
+        {/* Section: Apps */}
         {!sidebarCollapsed && (
-          <div>
-            <p className="section-title px-2.5 mb-2">Platform Horizon</p>
-            <div className="space-y-1">
-              {upcomingModules.map(({ icon: Icon, label }) => (
-                <div
-                  key={label}
-                  className="flex items-center gap-3 px-3 py-2 rounded text-xs text-harvey-darkMuted cursor-not-allowed opacity-75"
+          <div className="space-y-1">
+            <p className="px-3 text-[10px] uppercase font-semibold text-sidebar-muted/70 tracking-wider">
+              Apps
+            </p>
+            <NavLink
+              to="/reports"
+              className={({ isActive }) => clsx(
+                'flex items-center gap-2.5 px-3 py-1.5 rounded-md text-sidebar-muted hover:text-white hover:bg-sidebar-hover transition-colors',
+                isActive && 'bg-sidebar-active text-white font-medium'
+              )}
+            >
+              <FileText className="w-3.5 h-3.5 flex-shrink-0" />
+              <span className="truncate">Contract Intelligence</span>
+            </NavLink>
+          </div>
+        )}
+
+        {/* Section: Recents (Real documents) */}
+        {!sidebarCollapsed && (
+          <div className="space-y-1">
+            <p className="px-3 text-[10px] uppercase font-semibold text-sidebar-muted/70 tracking-wider">
+              Recents
+            </p>
+            <div className="space-y-0.5">
+              {documents.slice(0, 3).map((doc) => (
+                <button
+                  key={doc.id}
+                  onClick={() => handleSelectRecent(doc)}
+                  className="w-full flex items-center gap-2 px-3 py-1.5 rounded-md text-sidebar-muted hover:text-white hover:bg-sidebar-hover transition-colors text-left"
                 >
-                  <Icon className="w-4 h-4 flex-shrink-0" />
-                  <span className="flex-1 truncate tracking-tight">{label}</span>
-                  <span className="text-[9px] font-mono text-harvey-muted bg-harvey-surface px-1.5 py-0.2 rounded border border-harvey-borderSubtle">
-                    SOON
-                  </span>
-                </div>
+                  <span className="text-sidebar-muted text-[10px]">•</span>
+                  <span className="truncate text-xs">{doc.original_name}</span>
+                </button>
               ))}
+
+              {documents.length === 0 && (
+                <p className="px-3 py-1 text-[11px] text-sidebar-muted/60 italic">No recent audits</p>
+              )}
+
+              <NavLink
+                to="/reports"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-md text-sidebar-muted hover:text-white hover:bg-sidebar-hover transition-colors"
+              >
+                <Clock className="w-3.5 h-3.5" />
+                <span>View History</span>
+              </NavLink>
+            </div>
+          </div>
+        )}
+
+        {/* Section: Spaces (Active Matters) */}
+        {!sidebarCollapsed && (
+          <div className="space-y-1">
+            <p className="px-3 text-[10px] uppercase font-semibold text-sidebar-muted/70 tracking-wider">
+              Spaces
+            </p>
+            <div className="space-y-0.5">
+              <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-md text-sidebar-muted hover:text-white hover:bg-sidebar-hover transition-colors cursor-pointer">
+                <span className="w-4 h-4 rounded bg-sidebar-hover text-white flex items-center justify-center text-[10px] font-medium border border-sidebar-border">
+                  A
+                </span>
+                <span className="truncate">Acme Acquisition</span>
+              </div>
+
+              <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-md text-sidebar-muted hover:text-white hover:bg-sidebar-hover transition-colors cursor-pointer">
+                <span className="w-4 h-4 rounded bg-sidebar-hover text-white flex items-center justify-center text-[10px] font-medium border border-sidebar-border">
+                  T
+                </span>
+                <span className="truncate">Project Titan</span>
+              </div>
+
+              <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-md text-sidebar-muted hover:text-white hover:bg-sidebar-hover transition-colors cursor-pointer">
+                <span className="w-4 h-4 rounded bg-sidebar-hover text-white flex items-center justify-center text-[10px] font-medium border border-sidebar-border">
+                  D
+                </span>
+                <span className="truncate">Delphi Diligence</span>
+              </div>
             </div>
           </div>
         )}
       </nav>
 
-      {/* Footer / Engine Status */}
+      {/* Bottom Profile Bar from Screenshot */}
       <div className={clsx(
-        'p-3 border-t border-harvey-border/80 bg-harvey-obsidian/40',
-        sidebarCollapsed ? 'flex flex-col items-center gap-2' : ''
+        'p-3 border-t border-sidebar-border flex items-center justify-between bg-sidebar-bg',
+        sidebarCollapsed && 'justify-center p-2'
       )}>
-        {!sidebarCollapsed ? (
-          <div className="p-2.5 rounded bg-harvey-surface/80 border border-harvey-border mb-2.5 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-harvey-emerald opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-harvey-emerald"></span>
-              </span>
-              <div>
-                <p className="text-[11px] font-medium text-harvey-ivory tracking-tight leading-none">Local AI Core</p>
-                <p className="text-[10px] text-harvey-muted font-mono mt-0.5">Ollama · Zero-Data Leak</p>
-              </div>
-            </div>
-            <Sparkles className="w-3.5 h-3.5 text-harvey-gold" />
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-7 h-7 rounded bg-neutral-800 border border-neutral-700 flex items-center justify-center text-xs font-medium text-white flex-shrink-0">
+            A
           </div>
-        ) : (
-          <div className="w-2 h-2 rounded-full bg-harvey-emerald mb-2" title="Engine Active" />
-        )}
+          {!sidebarCollapsed && (
+            <div className="min-w-0">
+              <p className="text-xs font-medium text-white truncate leading-none">Axiom Counsel</p>
+              <p className="text-[10px] text-sidebar-muted truncate mt-0.5 font-mono">Local Core Active</p>
+            </div>
+          )}
+        </div>
 
         <button
           onClick={toggleSidebar}
-          className="flex items-center justify-between text-harvey-muted hover:text-harvey-ivory transition-colors w-full px-2 py-1.5 rounded hover:bg-harvey-surface text-xs"
+          className="text-sidebar-muted hover:text-white p-1 rounded hover:bg-sidebar-hover transition-colors"
+          title="Toggle Navigation"
         >
-          {!sidebarCollapsed && <span className="text-[11px] text-harvey-muted font-medium">Collapse Navigation</span>}
-          {sidebarCollapsed ? <ChevronRight className="w-3.5 h-3.5 mx-auto" /> : <ChevronLeft className="w-3.5 h-3.5" />}
+          {sidebarCollapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
         </button>
       </div>
     </aside>
