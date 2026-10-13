@@ -61,6 +61,13 @@
   }
 }
 
+/* Sidebar Dark Theme - Harvey Dual Tone (Guaranteed) */
+aside {
+  background-color: #0e0e10 !important;
+  border-right: 1px solid #232328 !important;
+  color: #ffffff !important;
+}
+
 /* Harvey Clean White Canvas Cards */
 .card {
   background-color: #ffffff;
