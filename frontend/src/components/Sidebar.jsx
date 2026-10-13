@@ -73,7 +73,7 @@ export default function Sidebar() {
           to="/ma"
           style={{ backgroundColor: '#1a1a1d', borderColor: '#232328', color: '#ffffff' }}
           className={clsx(
-            'flex items-center gap-2 rounded-lg bg-[#1a1a1d] hover:bg-[#242429] text-white text-xs font-medium px-3 py-2 transition-all border border-[#232328]',
+            'flex items-center gap-2 rounded-lg bg-[#1a1a1d] hover:bg-[#242429] text-white text-[13.5px] font-medium px-3.5 py-2 transition-all border border-[#232328]',
             sidebarCollapsed && 'justify-center px-0'
           )}
         >
@@ -83,7 +83,7 @@ export default function Sidebar() {
       </div>
 
       {/* Main Navigation Items */}
-      <nav className="flex-1 px-3 py-2 space-y-5 overflow-y-auto overflow-x-hidden text-xs">
+      <nav className="flex-1 px-3 py-2 space-y-5 overflow-y-auto overflow-x-hidden text-[13.5px]">
         <div className="space-y-0.5">
           <NavLink
             to="/dashboard"
@@ -137,7 +137,7 @@ export default function Sidebar() {
         {/* Section: Apps */}
         {!sidebarCollapsed && (
           <div className="space-y-1">
-            <p className="px-3 text-[10px] uppercase font-semibold text-[#8e8e93]/70 tracking-wider">
+            <p className="px-3 text-[11px] uppercase font-semibold text-[#8e8e93]/80 tracking-wider">
               Apps
             </p>
             <NavLink
@@ -156,7 +156,7 @@ export default function Sidebar() {
         {/* Section: Recents */}
         {!sidebarCollapsed && (
           <div className="space-y-1">
-            <p className="px-3 text-[10px] uppercase font-semibold text-[#8e8e93]/70 tracking-wider">
+            <p className="px-3 text-[11px] uppercase font-semibold text-[#8e8e93]/80 tracking-wider">
               Recents
             </p>
             <div className="space-y-0.5">
@@ -167,12 +167,12 @@ export default function Sidebar() {
                   className="w-full flex items-center gap-2 px-3 py-1.5 rounded-md text-[#8e8e93] hover:text-white hover:bg-[#1a1a1d] transition-colors text-left"
                 >
                   <span className="text-[#8e8e93] text-[10px]">•</span>
-                  <span className="truncate text-xs">{doc.original_name}</span>
+                  <span className="truncate text-[13px]">{doc.original_name}</span>
                 </button>
               ))}
 
               {documents.length === 0 && (
-                <p className="px-3 py-1 text-[11px] text-[#8e8e93]/50 italic">No recent audits</p>
+                <p className="px-3 py-1 text-[12px] text-[#8e8e93]/50 italic">No recent audits</p>
               )}
 
               <NavLink
@@ -189,7 +189,7 @@ export default function Sidebar() {
         {/* Section: Spaces */}
         {!sidebarCollapsed && (
           <div className="space-y-1">
-            <p className="px-3 text-[10px] uppercase font-semibold text-[#8e8e93]/70 tracking-wider">
+            <p className="px-3 text-[11px] uppercase font-semibold text-[#8e8e93]/80 tracking-wider">
               Spaces
             </p>
             <div className="space-y-0.5">
@@ -197,21 +197,21 @@ export default function Sidebar() {
                 <span className="w-4 h-4 rounded bg-[#1a1a1d] text-white flex items-center justify-center text-[10px] font-medium border border-[#232328]">
                   A
                 </span>
-                <span className="truncate">Acme Acquisition</span>
+                <span className="truncate text-[13px]">Acme Acquisition</span>
               </div>
 
               <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-md text-[#8e8e93] hover:text-white hover:bg-[#1a1a1d] transition-colors cursor-pointer">
                 <span className="w-4 h-4 rounded bg-[#1a1a1d] text-white flex items-center justify-center text-[10px] font-medium border border-[#232328]">
                   T
                 </span>
-                <span className="truncate">Project Titan</span>
+                <span className="truncate text-[13px]">Project Titan</span>
               </div>
 
               <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-md text-[#8e8e93] hover:text-white hover:bg-[#1a1a1d] transition-colors cursor-pointer">
                 <span className="w-4 h-4 rounded bg-[#1a1a1d] text-white flex items-center justify-center text-[10px] font-medium border border-[#232328]">
                   D
                 </span>
-                <span className="truncate">Delphi Diligence</span>
+                <span className="truncate text-[13px]">Delphi Diligence</span>
               </div>
             </div>
           </div>
@@ -232,8 +232,8 @@ export default function Sidebar() {
           </div>
           {!sidebarCollapsed && (
             <div className="min-w-0">
-              <p className="text-xs font-medium text-white truncate leading-none">Axiom Counsel</p>
-              <p className="text-[10px] text-[#8e8e93] truncate mt-0.5 font-mono">Local Core Active</p>
+              <p className="text-sm font-medium text-white truncate leading-none">Axiom Counsel</p>
+              <p className="text-[11px] text-[#8e8e93] truncate mt-1 font-mono">Local Core Active</p>
             </div>
           )}
         </div>

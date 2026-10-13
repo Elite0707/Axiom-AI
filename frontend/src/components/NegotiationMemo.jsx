@@ -74,10 +74,10 @@ ${memo.negotiation_protocol.join('\n')}
       {/* Top Action Bar */}
       <div className="flex items-center justify-between pb-2 border-b border-canvas-border">
         <div>
-          <span className="text-[10px] uppercase font-semibold text-neutral-500 tracking-wider">
+          <span className="text-xs uppercase font-semibold text-neutral-500 tracking-wider">
             Executive Partner Brief
           </span>
-          <h2 className="font-serif text-xl font-normal text-canvas-text">
+          <h2 className="font-serif text-2xl font-normal text-canvas-text">
             Deal Negotiation Memo
           </h2>
         </div>
@@ -99,15 +99,15 @@ ${memo.negotiation_protocol.join('\n')}
         {/* Deal Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-4 border-b border-canvas-border">
           <div>
-            <span className="text-[10px] font-mono uppercase bg-neutral-100 text-neutral-800 px-2.5 py-0.5 rounded border border-neutral-200">
+            <span className="text-xs font-mono uppercase bg-neutral-100 text-neutral-800 px-3 py-0.5 rounded border border-neutral-200">
               {memo.perspective}
             </span>
-            <h3 className="font-serif text-lg font-normal text-canvas-text mt-1.5">
+            <h3 className="font-serif text-xl font-normal text-canvas-text mt-1.5">
               {memo.deal_title}
             </h3>
           </div>
           <div className="text-right">
-            <span className="text-[11px] text-canvas-textMuted font-mono">
+            <span className="text-xs text-canvas-textMuted font-mono">
               Confidential · Attorney Work Product
             </span>
           </div>
@@ -115,34 +115,34 @@ ${memo.negotiation_protocol.join('\n')}
 
         {/* Executive Posture & Leverage */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-4 rounded-lg bg-neutral-50 border border-neutral-200 space-y-1.5">
-            <span className="text-[10px] uppercase font-semibold text-neutral-500 tracking-wider">
+          <div className="p-4.5 rounded-lg bg-neutral-50 border border-neutral-200 space-y-1.5">
+            <span className="text-xs uppercase font-semibold text-neutral-500 tracking-wider">
               Executive Bargaining Posture
             </span>
-            <p className="text-xs text-canvas-text leading-relaxed">
+            <p className="text-[13.5px] text-canvas-text leading-relaxed">
               {memo.executive_posture}
             </p>
           </div>
 
-          <div className="p-4 rounded-lg bg-neutral-50 border border-neutral-200 space-y-1.5">
-            <span className="text-[10px] uppercase font-semibold text-neutral-500 tracking-wider">
+          <div className="p-4.5 rounded-lg bg-neutral-50 border border-neutral-200 space-y-1.5">
+            <span className="text-xs uppercase font-semibold text-neutral-500 tracking-wider">
               Strategic Commercial Leverage
             </span>
-            <p className="text-xs text-canvas-text leading-relaxed">
+            <p className="text-[13.5px] text-canvas-text leading-relaxed">
               {memo.deal_leverage}
             </p>
           </div>
         </div>
 
         {/* Non-Negotiable Deal Breakers */}
-        <div className="p-4 rounded-lg bg-red-50/60 border border-red-200 space-y-2">
+        <div className="p-4.5 rounded-lg bg-red-50/60 border border-red-200 space-y-2">
           <div className="flex items-center gap-1.5 text-red-700">
             <ShieldAlert className="w-4 h-4" />
             <span className="text-xs font-semibold uppercase tracking-wider">
               Non-Negotiable Deal Breakers (Redlines Required)
             </span>
           </div>
-          <ul className="space-y-1.5 pl-5 list-disc text-xs text-red-900 leading-relaxed">
+          <ul className="space-y-1.5 pl-5 list-disc text-sm text-red-900 leading-relaxed">
             {memo.deal_breakers.map((breaker, i) => (
               <li key={i}>{breaker}</li>
             ))}
@@ -151,7 +151,7 @@ ${memo.negotiation_protocol.join('\n')}
 
         {/* Key Negotiation Battlegrounds */}
         <div className="space-y-4">
-          <span className="text-[11px] uppercase font-semibold text-neutral-500 tracking-wider block">
+          <span className="text-xs uppercase font-semibold text-neutral-500 tracking-wider block">
             Core Battlegrounds & Lead Attorney Talking Points
           </span>
 
@@ -159,10 +159,10 @@ ${memo.negotiation_protocol.join('\n')}
             {memo.battlegrounds.map((bg, idx) => (
               <div key={idx} className="p-4.5 rounded-lg border border-canvas-border bg-neutral-50/50 space-y-3">
                 <div className="flex items-start justify-between gap-3">
-                  <h4 className="font-serif text-sm font-normal text-canvas-text">
+                  <h4 className="font-serif text-base font-normal text-canvas-text">
                     {bg.issue}
                   </h4>
-                  <div className="flex items-center gap-2 text-[10px] font-mono">
+                  <div className="flex items-center gap-2 text-xs font-mono">
                     <span className="bg-red-50 text-red-700 px-2 py-0.5 rounded border border-red-200">
                       Seller: {bg.seller_position}
                     </span>
@@ -174,21 +174,21 @@ ${memo.negotiation_protocol.join('\n')}
                 </div>
 
                 {/* Lead Attorney Scripted Talking Point */}
-                <div className="p-3 rounded-md bg-white border border-canvas-border flex items-start gap-2.5">
+                <div className="p-3.5 rounded-md bg-white border border-canvas-border flex items-start gap-2.5">
                   <MessageSquareQuote className="w-4 h-4 text-neutral-600 flex-shrink-0 mt-0.5" />
                   <div className="space-y-0.5">
-                    <span className="text-[10px] uppercase font-bold text-neutral-500 tracking-wider">
+                    <span className="text-[11px] uppercase font-bold text-neutral-500 tracking-wider">
                       Partner Talking Point (Script)
                     </span>
-                    <p className="font-serif text-xs italic text-canvas-text leading-relaxed">
+                    <p className="font-serif text-sm italic text-canvas-text leading-relaxed">
                       {bg.talking_point}
                     </p>
                   </div>
                 </div>
 
                 {/* Fallback Position */}
-                <div className="text-xs text-neutral-600 flex items-baseline gap-2 pl-1">
-                  <span className="text-[10px] uppercase font-semibold text-neutral-500">
+                <div className="text-sm text-neutral-700 flex items-baseline gap-2 pl-1">
+                  <span className="text-xs uppercase font-semibold text-neutral-500">
                     Fallback Compromise:
                   </span>
                   <span>{bg.fallback_compromise}</span>

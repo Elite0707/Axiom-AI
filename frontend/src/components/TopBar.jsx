@@ -26,10 +26,10 @@ export default function TopBar() {
       {/* Page Title in Harvey Serif */}
       <div className="flex items-center gap-3">
         <div>
-          <h1 className="text-xl font-serif text-canvas-text font-normal tracking-tight">
+          <h1 className="text-2xl font-serif text-canvas-text font-normal tracking-tight">
             {title}
           </h1>
-          <p className="text-[11px] text-canvas-textMuted font-sans">
+          <p className="text-xs text-canvas-textMuted font-sans mt-0.5">
             {subtitle}
           </p>
         </div>
@@ -38,33 +38,33 @@ export default function TopBar() {
       {/* Right Controls matching Harvey Header */}
       <div className="flex items-center gap-3">
         {/* Airgapped Security Badge */}
-        <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-canvas-bg border border-canvas-border text-[11px] text-canvas-textMuted font-medium">
-          <Lock className="w-3 h-3 text-neutral-600" />
+        <div className="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full bg-canvas-bg border border-canvas-border text-xs text-canvas-textMuted font-medium">
+          <Lock className="w-3.5 h-3.5 text-neutral-600" />
           <span>Local Engine · Zero Egress</span>
         </div>
 
         {/* Local Ollama Status */}
-        <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-canvas-bg border border-canvas-border text-xs">
-          <Cpu className="w-3 h-3 text-canvas-textMuted" />
+        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-canvas-bg border border-canvas-border text-xs">
+          <Cpu className="w-3.5 h-3.5 text-canvas-textMuted" />
           {health?.status === 'healthy' ? (
             <div className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-risk-low" />
-              <span className="text-[11px] text-canvas-text font-medium">Ollama Ready</span>
+              <span className="text-xs text-canvas-text font-medium">Ollama Ready</span>
             </div>
           ) : health?.status === 'degraded' ? (
             <div className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-risk-med" />
-              <span className="text-[11px] text-risk-med font-medium">Offline</span>
+              <span className="text-xs text-risk-med font-medium">Offline</span>
             </div>
           ) : (
-            <span className="text-[11px] text-canvas-textMuted animate-pulse">Checking...</span>
+            <span className="text-xs text-canvas-textMuted animate-pulse">Checking...</span>
           )}
         </div>
 
         {/* Harvey's Signature Black Pill Button: "Ask Harvey" -> "Ask Axiom" */}
         <button
           onClick={() => navigate('/ma')}
-          className="bg-black hover:bg-neutral-800 text-white text-xs font-medium px-3.5 py-1.5 rounded-md flex items-center gap-1.5 shadow-sm transition-all"
+          className="bg-black hover:bg-neutral-800 text-white text-[13px] font-medium px-4 py-2 rounded-md flex items-center gap-1.5 shadow-sm transition-all"
         >
           <span className="font-serif font-bold text-xs">A</span>
           <span>Ask Axiom</span>

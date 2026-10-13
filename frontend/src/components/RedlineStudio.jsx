@@ -85,7 +85,7 @@ export default function RedlineStudio({ documentId, initialClause = '4.3' }) {
     }
 
     return (
-      <div className="font-serif text-sm leading-relaxed text-canvas-text select-text whitespace-pre-wrap">
+      <div className="font-serif text-base leading-relaxed text-canvas-text select-text whitespace-pre-wrap">
         {parts.map((p, idx) => {
           if (p.type === 'deletion') {
             return (
@@ -131,7 +131,7 @@ export default function RedlineStudio({ documentId, initialClause = '4.3' }) {
           <select
             value={selectedClause}
             onChange={(e) => setSelectedClause(e.target.value)}
-            className="text-xs bg-neutral-50 border border-neutral-300 rounded px-2.5 py-1.5 text-canvas-text font-medium focus:outline-none focus:border-black"
+            className="text-sm bg-neutral-50 border border-neutral-300 rounded px-3 py-1.5 text-canvas-text font-medium focus:outline-none focus:border-black"
           >
             {PRESET_CLAUSES.map(c => (
               <option key={c.id} value={c.id}>{c.label}</option>
@@ -145,7 +145,7 @@ export default function RedlineStudio({ documentId, initialClause = '4.3' }) {
             <button
               onClick={() => setPerspective('buyer')}
               className={clsx(
-                'px-2.5 py-1 rounded-md transition-all font-medium',
+                'px-3 py-1 rounded-md transition-all font-medium text-xs',
                 perspective === 'buyer' ? 'bg-black text-white shadow-xs' : 'text-neutral-600 hover:text-black'
               )}
             >
@@ -154,7 +154,7 @@ export default function RedlineStudio({ documentId, initialClause = '4.3' }) {
             <button
               onClick={() => setPerspective('seller')}
               className={clsx(
-                'px-2.5 py-1 rounded-md transition-all font-medium',
+                'px-3 py-1 rounded-md transition-all font-medium text-xs',
                 perspective === 'seller' ? 'bg-black text-white shadow-xs' : 'text-neutral-600 hover:text-black'
               )}
             >
@@ -166,7 +166,7 @@ export default function RedlineStudio({ documentId, initialClause = '4.3' }) {
             <button
               onClick={() => setViewMode('tracked')}
               className={clsx(
-                'px-2.5 py-1 rounded-md transition-all font-medium',
+                'px-3 py-1 rounded-md transition-all font-medium text-xs',
                 viewMode === 'tracked' ? 'bg-white text-black shadow-xs' : 'text-neutral-600 hover:text-black'
               )}
             >
@@ -175,7 +175,7 @@ export default function RedlineStudio({ documentId, initialClause = '4.3' }) {
             <button
               onClick={() => setViewMode('clean')}
               className={clsx(
-                'px-2.5 py-1 rounded-md transition-all font-medium',
+                'px-3 py-1 rounded-md transition-all font-medium text-xs',
                 viewMode === 'clean' ? 'bg-white text-black shadow-xs' : 'text-neutral-600 hover:text-black'
               )}
             >
@@ -191,10 +191,10 @@ export default function RedlineStudio({ documentId, initialClause = '4.3' }) {
           <div className="card p-6 bg-white border border-canvas-border shadow-sm space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-canvas-border">
               <div>
-                <span className="text-[10px] uppercase font-semibold text-neutral-500 tracking-wider">
+                <span className="text-xs uppercase font-semibold text-neutral-500 tracking-wider">
                   Target Provision
                 </span>
-                <h3 className="font-serif text-lg font-normal text-canvas-text mt-0.5">
+                <h3 className="font-serif text-xl font-normal text-canvas-text mt-0.5">
                   {redlineData.clause_name}
                 </h3>
               </div>
@@ -213,7 +213,7 @@ export default function RedlineStudio({ documentId, initialClause = '4.3' }) {
               {viewMode === 'tracked' ? (
                 renderFormattedDiff(redlineData.redline_markdown)
               ) : (
-                <p className="font-serif text-sm leading-relaxed text-canvas-text whitespace-pre-wrap select-text">
+                <p className="font-serif text-base leading-relaxed text-canvas-text whitespace-pre-wrap select-text">
                   {redlineData.clean_revised}
                 </p>
               )}
@@ -221,7 +221,7 @@ export default function RedlineStudio({ documentId, initialClause = '4.3' }) {
 
             {/* Legend */}
             {viewMode === 'tracked' && (
-              <div className="flex items-center gap-4 text-[11px] text-neutral-500 pt-1">
+              <div className="flex items-center gap-4 text-xs text-neutral-500 pt-1">
                 <div className="flex items-center gap-1.5">
                   <span className="w-3 h-3 rounded bg-red-100 border border-red-300" />
                   <span>Strikethrough: Proposed deletion</span>
@@ -237,19 +237,19 @@ export default function RedlineStudio({ documentId, initialClause = '4.3' }) {
           {/* Strategic Rationale & Market Precedent */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="card p-5 bg-white border border-canvas-border space-y-2 shadow-xs">
-              <span className="text-[10px] uppercase font-semibold text-neutral-500 tracking-wider">
+              <span className="text-xs uppercase font-semibold text-neutral-500 tracking-wider">
                 Drafting Rationale
               </span>
-              <p className="text-xs text-canvas-text leading-relaxed">
+              <p className="text-sm text-canvas-text leading-relaxed">
                 {redlineData.drafting_rationale}
               </p>
             </div>
 
             <div className="card p-5 bg-white border border-canvas-border space-y-2 shadow-xs">
-              <span className="text-[10px] uppercase font-semibold text-neutral-500 tracking-wider">
+              <span className="text-xs uppercase font-semibold text-neutral-500 tracking-wider">
                 Market Benchmark
               </span>
-              <p className="text-xs text-neutral-700 leading-relaxed font-mono">
+              <p className="text-sm text-neutral-700 leading-relaxed font-mono">
                 {redlineData.market_standard}
               </p>
             </div>

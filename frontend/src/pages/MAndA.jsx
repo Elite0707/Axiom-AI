@@ -30,8 +30,8 @@ const TABS = [
 function TermRow({ label, value }) {
   if (!value) return null
   return (
-    <div className="flex items-baseline justify-between py-2.5 border-b border-canvas-borderSubtle last:border-0 text-xs">
-      <span className="text-canvas-textMuted text-[11px] uppercase tracking-wider font-semibold">{label}</span>
+    <div className="flex items-baseline justify-between py-2.5 border-b border-canvas-borderSubtle last:border-0 text-sm">
+      <span className="text-canvas-textMuted text-xs uppercase tracking-wider font-semibold">{label}</span>
       <span className="text-canvas-text text-right font-medium max-w-sm truncate">{value}</span>
     </div>
   )
@@ -44,15 +44,15 @@ function ClauseCard({ title, items, icon: Icon }) {
       <div className="flex items-center justify-between pb-2.5 border-b border-canvas-borderSubtle">
         <div className="flex items-center gap-2">
           <Icon className="w-4 h-4 text-canvas-textMuted" />
-          <h4 className="font-serif text-base text-canvas-text font-normal">{title}</h4>
+          <h4 className="font-serif text-lg text-canvas-text font-normal">{title}</h4>
         </div>
-        <span className="text-[11px] font-mono text-canvas-textMuted bg-canvas-bg px-2 py-0.5 rounded border border-canvas-border">
+        <span className="text-xs font-mono text-canvas-textMuted bg-canvas-bg px-2.5 py-0.5 rounded border border-canvas-border">
           {items.length} items
         </span>
       </div>
       <ul className="space-y-2.5">
         {items.map((item, i) => (
-          <li key={i} className="flex items-start gap-2.5 text-xs text-canvas-text leading-relaxed">
+          <li key={i} className="flex items-start gap-2.5 text-[13.5px] text-canvas-text leading-relaxed">
             <span className="text-neutral-400 font-mono text-xs mt-0.5 flex-shrink-0">•</span>
             <span>{item}</span>
           </li>
@@ -219,17 +219,17 @@ export default function MAndA() {
             <div className="card p-5 mb-4 space-y-3 bg-white">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="min-w-0">
-                  <div className="flex items-center gap-2 text-xs text-canvas-textMuted font-mono">
+                  <div className="flex items-center gap-2 text-sm text-canvas-textMuted font-mono">
                     <span>Matter Ref #: M&A-{selectedDocument.id.slice(0, 6).toUpperCase()}</span>
                     <span>·</span>
                     <span className="text-black font-semibold">Active Review</span>
                   </div>
 
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="w-6 h-6 rounded bg-black text-white flex items-center justify-center font-serif text-xs font-bold">
+                    <span className="w-7 h-7 rounded bg-black text-white flex items-center justify-center font-serif text-sm font-bold">
                       M
                     </span>
-                    <h2 className="font-serif text-xl text-canvas-text font-normal truncate">
+                    <h2 className="font-serif text-2xl text-canvas-text font-normal truncate">
                       {selectedDocument.original_name}
                     </h2>
                   </div>
@@ -237,7 +237,7 @@ export default function MAndA() {
 
                 <div className="flex items-center gap-2 flex-shrink-0">
                   {currentAnalysis?.status === 'running' ? (
-                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-neutral-100 border border-neutral-300 text-xs text-canvas-text">
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-neutral-100 border border-neutral-300 text-sm text-canvas-text">
                       <Loader2 className="w-3.5 h-3.5 animate-spin text-black" />
                       <span className="font-medium">Auditing clauses...</span>
                     </div>
@@ -245,7 +245,7 @@ export default function MAndA() {
                     <button
                       onClick={handleRunAnalysis}
                       disabled={analysisLoading || currentAnalysis?.status === 'running'}
-                      className="btn-primary"
+                      className="btn-primary text-xs"
                     >
                       <PlayCircle className="w-4 h-4" />
                       <span>{result ? 'Re-Audit Contract' : 'Run Due Diligence'}</span>
@@ -256,15 +256,15 @@ export default function MAndA() {
 
               {/* Source Pill & Overview Tags */}
               <div className="flex items-center gap-2 flex-wrap pt-1 border-t border-canvas-borderSubtle">
-                <span className="text-[11px] text-canvas-textMuted font-medium">Source:</span>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-canvas-bg border border-canvas-border text-xs text-canvas-text font-medium shadow-sm">
+                <span className="text-xs text-canvas-textMuted font-medium">Source:</span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-canvas-bg border border-canvas-border text-sm text-canvas-text font-medium shadow-sm">
                   <FileText className="w-3.5 h-3.5 text-neutral-600" />
                   <span className="truncate max-w-xs">{selectedDocument.original_name}</span>
-                  <span className="font-mono text-[10px] text-canvas-textMuted font-normal">({selectedDocument.page_count}p)</span>
+                  <span className="font-mono text-xs text-canvas-textMuted font-normal">({selectedDocument.page_count}p)</span>
                 </span>
 
                 {result && (
-                  <span className={clsx(riskBadgeClass, 'ml-auto text-[10px]')}>
+                  <span className={clsx(riskBadgeClass, 'ml-auto text-xs')}>
                     {result.overall_risk_level} RISK LEVEL
                   </span>
                 )}
@@ -285,13 +285,13 @@ export default function MAndA() {
                   key={id}
                   onClick={() => setActiveTab(id)}
                   className={clsx(
-                    'flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium rounded-t-md transition-all whitespace-nowrap',
+                    'flex items-center gap-1.5 px-4 py-2.5 text-[13.5px] font-medium rounded-t-md transition-all whitespace-nowrap',
                     activeTab === id
                       ? 'bg-white text-black font-semibold border-t-2 border-black shadow-sm'
                       : 'text-canvas-textMuted hover:text-black hover:bg-neutral-100'
                   )}
                 >
-                  <Icon className="w-3.5 h-3.5" />
+                  <Icon className="w-4 h-4" />
                   <span>{label}</span>
                   {id === 'asymmetries' && (
                     <span className="text-[10px] font-mono px-1.5 py-0.2 rounded font-bold ml-1 bg-red-100 text-red-700">
