@@ -2,6 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --harvey-ink: #0f0e0d;
+  --harvey-obsidian: #151412;
+  --harvey-charcoal: #1f1d1a;
+  --harvey-surface: #25231f;
+  --harvey-card: #2b2824;
+  --harvey-border: #38352e;
+  --harvey-border-subtle: #2c2923;
+  --harvey-ivory: #fafaf9;
+  --harvey-cream: #f2f1f0;
+  --harvey-text-dim: #cccac6;
+  --harvey-muted: #8f8b85;
+  --harvey-dark-muted: #524f49;
+  --harvey-highlighter: #f6f202;
+  --harvey-gold: #cba766;
+  --harvey-coral: #f26161;
+  --harvey-amber: #eab308;
+  --harvey-emerald: #16a34a;
+}
+
 @layer base {
   * {
     box-sizing: border-box;
@@ -13,8 +33,8 @@
   }
 
   body {
-    background-color: #0f0e0d;
-    color: #fafaf9;
+    background-color: var(--harvey-ink);
+    color: var(--harvey-ivory);
     font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -28,8 +48,8 @@
   }
 
   ::selection {
-    background-color: #fafaf9;
-    color: #0f0e0d;
+    background-color: var(--harvey-ivory);
+    color: var(--harvey-ink);
   }
 
   ::-webkit-scrollbar {
@@ -37,93 +57,229 @@
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #151412;
+    background: var(--harvey-obsidian);
   }
   ::-webkit-scrollbar-thumb {
-    background: #38352e;
+    background: var(--harvey-border);
     border-radius: 3px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #524f49;
+    background: var(--harvey-dark-muted);
   }
 }
 
-@layer components {
-  /* Harvey signature cards */
-  .card {
-    @apply bg-harvey-charcoal border border-harvey-border rounded-lg shadow-subtle transition-all duration-200;
-  }
+/* Custom Component Classes (defined directly to prevent PostCSS @apply resolution errors) */
+.card {
+  background-color: var(--harvey-charcoal);
+  border: 1px solid var(--harvey-border);
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-  .card-surface {
-    @apply bg-harvey-surface border border-harvey-borderSubtle rounded-lg;
-  }
+.card-surface {
+  background-color: var(--harvey-surface);
+  border: 1px solid var(--harvey-border-subtle);
+  border-radius: 0.5rem;
+}
 
-  /* Harvey signature primary button: Ivory fill with ink text */
-  .btn-primary {
-    @apply bg-harvey-ivory hover:bg-harvey-cream text-harvey-ink font-medium px-4 py-2 rounded 
-           transition-all duration-150 flex items-center justify-center gap-2 
-           text-xs tracking-tight shadow-sm disabled:opacity-40 disabled:cursor-not-allowed;
-  }
+/* Harvey signature primary button: Ivory fill with ink text */
+.btn-primary {
+  background-color: var(--harvey-ivory);
+  color: var(--harvey-ink);
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  transition: all 0.15s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  letter-spacing: -0.0125em;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
 
-  /* Harvey signature secondary button: Subtle charcoal outline */
-  .btn-secondary {
-    @apply bg-harvey-surface hover:bg-harvey-card text-harvey-ivory font-medium px-3.5 py-2 rounded 
-           border border-harvey-border hover:border-harvey-muted/50 transition-all duration-150 
-           flex items-center justify-center gap-2 text-xs tracking-tight;
-  }
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--harvey-cream);
+}
 
-  /* Harvey signature ghost button */
-  .btn-ghost {
-    @apply text-harvey-muted hover:text-harvey-ivory hover:bg-harvey-surface px-2.5 py-1.5 rounded 
-           transition-colors duration-150 flex items-center gap-1.5 text-xs;
-  }
+.btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
 
-  .btn-danger {
-    @apply bg-harvey-coral/10 hover:bg-harvey-coral/20 text-harvey-coral font-medium px-3.5 py-1.5 rounded 
-           border border-harvey-coral/30 transition-all duration-150 flex items-center gap-1.5 text-xs;
-  }
+/* Harvey signature secondary button: Subtle charcoal outline */
+.btn-secondary {
+  background-color: var(--harvey-surface);
+  color: var(--harvey-ivory);
+  font-weight: 500;
+  padding: 0.5rem 0.875rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--harvey-border);
+  transition: all 0.15s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  letter-spacing: -0.0125em;
+}
 
-  /* Minimalist legal risk badges */
-  .badge-high {
-    @apply bg-harvey-coral/10 text-harvey-coral border border-harvey-coral/30 text-[10px] font-medium tracking-wider uppercase px-2 py-0.5 rounded;
-  }
-  .badge-medium {
-    @apply bg-harvey-amber/10 text-harvey-amber border border-harvey-amber/30 text-[10px] font-medium tracking-wider uppercase px-2 py-0.5 rounded;
-  }
-  .badge-low {
-    @apply bg-harvey-emerald/10 text-harvey-emerald border border-harvey-emerald/30 text-[10px] font-medium tracking-wider uppercase px-2 py-0.5 rounded;
-  }
-  .badge-unknown {
-    @apply bg-harvey-border/40 text-harvey-muted border border-harvey-border text-[10px] font-medium tracking-wider uppercase px-2 py-0.5 rounded;
-  }
-  .badge-tag {
-    @apply bg-harvey-surface text-harvey-textDim border border-harvey-borderSubtle text-[11px] font-normal px-2 py-0.5 rounded;
-  }
+.btn-secondary:hover {
+  background-color: var(--harvey-card);
+  border-color: rgba(143, 139, 133, 0.5);
+}
 
-  /* Harvey signature highlighter pill */
-  .badge-highlight {
-    @apply bg-harvey-highlighter text-harvey-highlighterText text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded;
-  }
+/* Harvey signature ghost button */
+.btn-ghost {
+  color: var(--harvey-muted);
+  padding: 0.375rem 0.625rem;
+  border-radius: 0.25rem;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+}
 
-  /* Input fields */
-  .input {
-    @apply bg-harvey-obsidian border border-harvey-border text-harvey-ivory rounded px-3 py-2 
-           focus:outline-none focus:border-harvey-ivory/60 focus:ring-1 focus:ring-harvey-ivory/20
-           placeholder:text-harvey-muted/60 transition-all duration-150 w-full text-xs font-sans;
-  }
+.btn-ghost:hover {
+  color: var(--harvey-ivory);
+  background-color: var(--harvey-surface);
+}
 
-  .skeleton {
-    @apply animate-pulse bg-harvey-border/40 rounded;
-    background: linear-gradient(90deg, #1f1d1a 25%, #2b2824 50%, #1f1d1a 75%);
-    background-size: 200% 100%;
-    animation: shimmer 2s infinite;
-  }
+.btn-danger {
+  background-color: rgba(242, 97, 97, 0.1);
+  color: var(--harvey-coral);
+  font-weight: 500;
+  padding: 0.375rem 0.875rem;
+  border-radius: 0.25rem;
+  border: 1px solid rgba(242, 97, 97, 0.3);
+  transition: all 0.15s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+}
 
-  .section-title {
-    @apply text-[10px] font-medium text-harvey-muted uppercase tracking-[0.12em];
-  }
+.btn-danger:hover {
+  background-color: rgba(242, 97, 97, 0.2);
+}
 
-  .stat-card {
-    @apply card p-4 flex flex-col justify-between;
-  }
+/* Minimalist legal risk badges */
+.badge-high {
+  background-color: rgba(242, 97, 97, 0.1);
+  color: var(--harvey-coral);
+  border: 1px solid rgba(242, 97, 97, 0.3);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.badge-medium {
+  background-color: rgba(234, 179, 8, 0.1);
+  color: var(--harvey-amber);
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.badge-low {
+  background-color: rgba(22, 163, 74, 0.1);
+  color: var(--harvey-emerald);
+  border: 1px solid rgba(22, 163, 74, 0.3);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.badge-unknown {
+  background-color: rgba(56, 53, 46, 0.4);
+  color: var(--harvey-muted);
+  border: 1px solid var(--harvey-border);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.badge-tag {
+  background-color: var(--harvey-surface);
+  color: var(--harvey-text-dim);
+  border: 1px solid var(--harvey-border-subtle);
+  font-size: 11px;
+  font-weight: 400;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+/* Harvey signature highlighter pill */
+.badge-highlight {
+  background-color: var(--harvey-highlighter);
+  color: var(--harvey-charcoal);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+}
+
+/* Input fields */
+.input {
+  background-color: var(--harvey-obsidian);
+  border: 1px solid var(--harvey-border);
+  color: var(--harvey-ivory);
+  border-radius: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  width: 100%;
+  transition: all 0.15s ease-in-out;
+}
+
+.input:focus {
+  outline: none;
+  border-color: rgba(250, 250, 249, 0.6);
+  box-shadow: 0 0 0 1px rgba(250, 250, 249, 0.2);
+}
+
+.input::placeholder {
+  color: rgba(143, 139, 133, 0.6);
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #1f1d1a 25%, #2b2824 50%, #1f1d1a 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+  border-radius: 0.25rem;
+}
+
+.section-title {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--harvey-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.stat-card {
+  background-color: var(--harvey-charcoal);
+  border: 1px solid var(--harvey-border);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
