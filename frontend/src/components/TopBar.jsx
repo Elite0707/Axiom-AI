@@ -1,61 +1,66 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { Bell, Search, Cpu, CheckCircle, AlertTriangle } from 'lucide-react'
+import { ShieldCheck, Cpu, AlertTriangle, Lock } from 'lucide-react'
 import { healthApi } from '../lib/api'
 
 const pageTitles = {
-  '/dashboard': { title: 'Dashboard', subtitle: 'Platform overview & recent activity' },
-  '/ma': { title: 'M&A Due Diligence', subtitle: 'Mergers & Acquisitions analysis' },
-  '/reports': { title: 'Reports', subtitle: 'Generated analysis reports' },
+  '/dashboard': { title: 'Intelligence Overview', subtitle: 'Executive dashboard & practice area activity' },
+  '/ma': { title: 'M&A Due Diligence Suite', subtitle: 'Automated deal term extraction, risk matrix & RAG analysis' },
+  '/reports': { title: 'Compliance & Audit Ledger', subtitle: 'Historical reviews and risk assessment reports' },
 }
 
 export default function TopBar() {
   const { pathname } = useLocation()
-  const { title, subtitle } = pageTitles[pathname] || { title: 'Axiom AI', subtitle: '' }
+  const { title, subtitle } = pageTitles[pathname] || { title: 'Axiom', subtitle: 'Legal Intelligence Platform' }
   const [health, setHealth] = useState(null)
 
   useEffect(() => {
-    healthApi.check().then(r => setHealth(r.data)).catch(() => setHealth({ status: 'degraded' }))
+    healthApi.check()
+      .then(r => setHealth(r.data))
+      .catch(() => setHealth({ status: 'degraded' }))
   }, [])
 
   return (
-    <header className="h-16 flex items-center px-6 border-b border-axiom-border bg-axiom-surface/80 backdrop-blur-sm flex-shrink-0">
-      {/* Page title */}
-      <div className="flex-1">
-        <h1 className="text-base font-semibold text-white">{title}</h1>
-        <p className="text-xs text-axiom-muted">{subtitle}</p>
+    <header className="h-14 flex items-center px-6 border-b border-harvey-border bg-harvey-charcoal/95 backdrop-blur-md flex-shrink-0 justify-between select-none z-10">
+      {/* Title area with Harvey editorial serif font */}
+      <div className="flex items-center gap-4">
+        <div>
+          <h1 className="text-base font-serif font-normal text-harvey-ivory tracking-tight">{title}</h1>
+          <p className="text-[11px] text-harvey-muted leading-tight font-sans">{subtitle}</p>
+        </div>
       </div>
 
-      {/* Right Controls */}
+      {/* Right controls */}
       <div className="flex items-center gap-3">
-        {/* Ollama status */}
-        <div className="flex items-center gap-2 bg-axiom-card border border-axiom-border px-3 py-1.5 rounded-lg">
-          <Cpu className="w-3.5 h-3.5 text-axiom-muted" />
+        {/* Security / Confidentiality Badge */}
+        <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded bg-harvey-surface border border-harvey-borderSubtle text-[11px] text-harvey-muted font-sans">
+          <Lock className="w-3 h-3 text-harvey-gold" />
+          <span className="font-medium tracking-tight text-harvey-cream">Airgapped Local Environment</span>
+        </div>
+
+        {/* Ollama Health Status */}
+        <div className="flex items-center gap-2 bg-harvey-surface border border-harvey-border px-2.5 py-1 rounded text-xs">
+          <Cpu className="w-3 h-3 text-harvey-muted" />
           {health?.status === 'healthy' ? (
-            <>
-              <CheckCircle className="w-3.5 h-3.5 text-green-400" />
-              <span className="text-xs text-green-400">Ollama Online</span>
-            </>
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-harvey-emerald" />
+              <span className="text-[11px] text-harvey-cream font-medium">Ollama Active</span>
+            </div>
           ) : health?.status === 'degraded' ? (
-            <>
-              <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
-              <span className="text-xs text-amber-400">Ollama Offline</span>
-            </>
+            <div className="flex items-center gap-1.5">
+              <AlertTriangle className="w-3 h-3 text-harvey-amber" />
+              <span className="text-[11px] text-harvey-amber font-medium">Ollama Offline</span>
+            </div>
           ) : (
-            <span className="text-xs text-axiom-muted animate-pulse">Checking...</span>
+            <span className="text-[11px] text-harvey-muted animate-pulse">Connecting...</span>
           )}
         </div>
 
-        {/* Notification bell */}
-        <button className="w-8 h-8 flex items-center justify-center rounded-lg text-axiom-muted 
-                          hover:text-axiom-text hover:bg-axiom-card transition-all">
-          <Bell className="w-4 h-4" />
-        </button>
-
-        {/* Avatar */}
-        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-axiom-accent to-blue-700 
-                       flex items-center justify-center text-xs font-bold text-white">
-          A
+        {/* User / Firm Initials */}
+        <div className="flex items-center gap-2 pl-2 border-l border-harvey-border">
+          <div className="w-7 h-7 rounded bg-harvey-surface border border-harvey-border flex items-center justify-center text-[11px] font-serif font-medium text-harvey-ivory">
+            AX
+          </div>
         </div>
       </div>
     </header>

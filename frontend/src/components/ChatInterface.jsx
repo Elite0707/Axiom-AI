@@ -1,18 +1,17 @@
 import { useState, useRef, useEffect } from 'react'
-import { Send, Bot, User, Loader2, Trash2, ChevronDown } from 'lucide-react'
+import { ArrowUp, Bot, User, Loader2, Trash2, ChevronDown, Sparkles } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import { chatApi } from '../lib/api'
 import clsx from 'clsx'
 
 const SUGGESTED_QUESTIONS = [
-  "Who are the parties in this agreement?",
-  "What is the deal value and payment structure?",
-  "What are the conditions precedent for closing?",
-  "Summarize the representations and warranties.",
-  "What are the indemnification obligations?",
-  "Are there any MAC clauses? What triggers them?",
-  "What are the termination rights of each party?",
-  "What non-compete obligations apply post-closing?",
+  "Who are the key parties and what is their role?",
+  "What is the total purchase price and adjustment mechanism?",
+  "Summarize all Conditions Precedent required for closing.",
+  "Are there any Material Adverse Change (MAC) carve-outs?",
+  "What are the indemnification caps and time limitations?",
+  "What non-compete covenants bind the sellers post-closing?",
+  "Under what circumstances can either party terminate?",
 ]
 
 export default function ChatInterface({ documentId, documentName }) {
@@ -59,7 +58,7 @@ export default function ChatInterface({ documentId, documentName }) {
     } catch (err) {
       const errMsg = {
         role: 'assistant',
-        content: `⚠️ Error: ${err.response?.data?.detail || 'Failed to get response. Please try again.'}`,
+        content: `Unable to process query: ${err.response?.data?.detail || 'Verify your local Ollama connection.'}`,
         timestamp: new Date().toISOString(),
         isError: true,
       }
@@ -87,45 +86,52 @@ export default function ChatInterface({ documentId, documentName }) {
   }
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Chat Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-axiom-border flex-shrink-0">
+    <div className="flex flex-col h-full bg-harvey-charcoal font-sans">
+      {/* Header */}
+      <div className="flex items-center justify-between px-5 py-3 border-b border-harvey-border flex-shrink-0 bg-harvey-surface/40">
         <div className="flex items-center gap-2">
-          <Bot className="w-4 h-4 text-axiom-accent" />
-          <span className="text-sm font-semibold text-axiom-text">Ask Axiom AI</span>
+          <Sparkles className="w-3.5 h-3.5 text-harvey-gold" />
+          <span className="font-serif text-sm font-normal text-harvey-ivory">Legal Research Assistant</span>
           {documentName && (
-            <span className="text-xs text-axiom-muted truncate max-w-48">· {documentName}</span>
+            <span className="text-[11px] text-harvey-muted truncate max-w-64 font-mono">
+              / {documentName}
+            </span>
           )}
         </div>
         {messages.length > 0 && (
-          <button onClick={clearChat} className="btn-danger py-1 px-2 text-xs">
-            <Trash2 className="w-3.5 h-3.5" />
-            Clear
+          <button onClick={clearChat} className="btn-ghost text-[11px] py-1 px-2">
+            <Trash2 className="w-3 h-3" />
+            Clear Canvas
           </button>
         )}
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      {/* Messages Viewport */}
+      <div className="flex-1 overflow-y-auto p-5 space-y-4">
         {messages.length === 0 ? (
-          <div className="space-y-4 animate-fade-in">
-            <div className="text-center py-6">
-              <Bot className="w-10 h-10 text-axiom-accent mx-auto mb-3" />
-              <p className="text-sm font-medium text-axiom-text">Ask anything about this document</p>
-              <p className="text-xs text-axiom-muted mt-1">Powered by RAG — answers are grounded in the document</p>
+          <div className="max-w-xl mx-auto py-8 space-y-6 animate-fade-in">
+            <div className="text-center space-y-2">
+              <h3 className="font-serif text-lg text-harvey-ivory font-normal">
+                Query this Agreement with Legal Precision
+              </h3>
+              <p className="text-xs text-harvey-muted max-w-md mx-auto">
+                Responses are strictly grounded in indexed contract clauses with direct source citations.
+              </p>
             </div>
-            <div>
-              <p className="section-title mb-3">Suggested Questions</p>
-              <div className="grid grid-cols-1 gap-2">
+
+            <div className="space-y-2">
+              <p className="section-title text-center mb-3">Precedent Research Prompts</p>
+              <div className="grid grid-cols-1 gap-1.5">
                 {SUGGESTED_QUESTIONS.map((q, i) => (
                   <button
                     key={i}
                     onClick={() => sendMessage(q)}
-                    className="text-left text-xs text-axiom-textDim bg-axiom-card hover:bg-axiom-border 
-                              border border-axiom-border hover:border-axiom-accent/30 
-                              px-3 py-2 rounded-lg transition-all duration-200 hover:text-axiom-text"
+                    className="text-left text-xs text-harvey-textDim hover:text-harvey-ivory 
+                              bg-harvey-surface hover:bg-harvey-card border border-harvey-borderSubtle 
+                              hover:border-harvey-border px-3.5 py-2.5 rounded transition-all duration-150 flex items-center justify-between group"
                   >
-                    {q}
+                    <span>{q}</span>
+                    <span className="text-harvey-muted group-hover:text-harvey-ivory group-hover:translate-x-0.5 transition-all text-xs">→</span>
                   </button>
                 ))}
               </div>
@@ -137,70 +143,67 @@ export default function ChatInterface({ documentId, documentName }) {
               key={i}
               className={clsx(
                 'flex gap-3 animate-slide-up',
-                msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'
+                msg.role === 'user' ? 'justify-end' : 'justify-start'
               )}
             >
-              {/* Avatar */}
-              <div className={clsx(
-                'w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5',
-                msg.role === 'user'
-                  ? 'bg-axiom-accent/20 text-axiom-accent'
-                  : msg.isError
-                    ? 'bg-red-500/20 text-red-400'
-                    : 'bg-axiom-card border border-axiom-border text-axiom-accent'
-              )}>
-                {msg.role === 'user' ? <User className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5" />}
-              </div>
+              {msg.role === 'assistant' && (
+                <div className="w-6 h-6 rounded border border-harvey-border flex items-center justify-center bg-harvey-surface flex-shrink-0 mt-1">
+                  <span className="font-serif text-[11px] text-harvey-ivory">A</span>
+                </div>
+              )}
 
-              {/* Bubble */}
               <div className={clsx(
-                'max-w-[85%] rounded-xl px-4 py-3 text-sm',
+                'max-w-[85%] rounded p-4 text-xs leading-relaxed',
                 msg.role === 'user'
-                  ? 'bg-axiom-accent text-white rounded-tr-sm'
+                  ? 'bg-harvey-surface border border-harvey-border text-harvey-ivory'
                   : msg.isError
-                    ? 'bg-red-500/10 border border-red-500/20 text-red-400 rounded-tl-sm'
-                    : 'bg-axiom-card border border-axiom-border text-axiom-text rounded-tl-sm'
+                    ? 'bg-harvey-coral/10 border border-harvey-coral/30 text-harvey-coral'
+                    : 'bg-harvey-obsidian border border-harvey-border text-harvey-cream'
               )}>
                 {msg.role === 'assistant' ? (
-                  <div className="prose prose-invert prose-sm max-w-none">
+                  <div className="prose prose-invert prose-xs max-w-none space-y-2">
                     <ReactMarkdown>{msg.content}</ReactMarkdown>
                   </div>
                 ) : (
                   <p>{msg.content}</p>
                 )}
               </div>
+
+              {msg.role === 'user' && (
+                <div className="w-6 h-6 rounded border border-harvey-border flex items-center justify-center bg-harvey-charcoal flex-shrink-0 mt-1">
+                  <User className="w-3 h-3 text-harvey-muted" />
+                </div>
+              )}
             </div>
           ))
         )}
 
-        {/* Loading indicator */}
+        {/* Loading status */}
         {loading && (
           <div className="flex gap-3 animate-fade-in">
-            <div className="w-7 h-7 rounded-full flex items-center justify-center bg-axiom-card border border-axiom-border text-axiom-accent flex-shrink-0">
-              <Bot className="w-3.5 h-3.5" />
+            <div className="w-6 h-6 rounded border border-harvey-border flex items-center justify-center bg-harvey-surface flex-shrink-0">
+              <span className="font-serif text-[11px] text-harvey-ivory">A</span>
             </div>
-            <div className="bg-axiom-card border border-axiom-border rounded-xl rounded-tl-sm px-4 py-3">
-              <div className="flex items-center gap-2 text-axiom-muted">
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                <span className="text-xs">Analyzing document...</span>
-              </div>
+            <div className="bg-harvey-obsidian border border-harvey-border rounded px-4 py-3 flex items-center gap-2 text-xs text-harvey-muted">
+              <Loader2 className="w-3.5 h-3.5 animate-spin text-harvey-ivory" />
+              <span>Synthesizing legal analysis from indexed clauses...</span>
             </div>
           </div>
         )}
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Source excerpts */}
+      {/* Sources Accordion */}
       {sources.length > 0 && (
-        <div className="px-4 py-2 border-t border-axiom-border">
+        <div className="px-5 py-2 border-t border-harvey-border bg-harvey-surface/50">
           <details className="group">
-            <summary className="text-xs text-axiom-muted cursor-pointer hover:text-axiom-text flex items-center gap-1">
+            <summary className="text-[11px] text-harvey-muted cursor-pointer hover:text-harvey-ivory flex items-center gap-1.5 select-none">
               <ChevronDown className="w-3 h-3 group-open:rotate-180 transition-transform" />
-              {sources.length} source excerpts used
+              <span>{sources.length} Verified Citations & Clause Excerpts</span>
             </summary>
-            <div className="mt-2 space-y-1 max-h-32 overflow-y-auto">
+            <div className="mt-2 space-y-1.5 max-h-36 overflow-y-auto pr-1">
               {sources.map((src, i) => (
-                <div key={i} className="text-[10px] text-axiom-muted bg-axiom-card border border-axiom-border rounded px-2 py-1.5 leading-relaxed">
+                <div key={i} className="text-[10px] text-harvey-muted bg-harvey-obsidian border border-harvey-borderSubtle rounded p-2 font-mono leading-relaxed">
                   {src}
                 </div>
               ))}
@@ -209,29 +212,30 @@ export default function ChatInterface({ documentId, documentName }) {
         </div>
       )}
 
-      {/* Input */}
-      <div className="px-4 py-3 border-t border-axiom-border flex-shrink-0">
-        <div className="flex gap-2">
+      {/* Input Field */}
+      <div className="p-4 border-t border-harvey-border bg-harvey-surface/30 flex-shrink-0">
+        <div className="flex items-center gap-2 bg-harvey-obsidian border border-harvey-border rounded px-3 py-1.5 focus-within:border-harvey-ivory/60 transition-colors">
           <textarea
             ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask about this M&A document..."
+            placeholder="Ask a question about this agreement..."
             rows={1}
             disabled={loading}
-            className="input resize-none min-h-[40px] max-h-32 py-2.5 text-sm leading-relaxed"
-            style={{ height: 'auto' }}
+            className="w-full bg-transparent text-xs text-harvey-ivory placeholder:text-harvey-muted/60 focus:outline-none resize-none py-1.5 leading-relaxed"
           />
           <button
             onClick={() => sendMessage()}
             disabled={!input.trim() || loading}
-            className="btn-primary px-3 self-end flex-shrink-0"
+            className="btn-primary p-1.5 h-7 w-7 rounded flex-shrink-0 disabled:opacity-20"
           >
-            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+            {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ArrowUp className="w-3.5 h-3.5" />}
           </button>
         </div>
-        <p className="text-[10px] text-axiom-muted mt-1.5">Press Enter to send · Shift+Enter for new line</p>
+        <p className="text-[10px] text-harvey-muted/70 text-right mt-1.5">
+          Enter to submit · Shift + Enter for newline
+        </p>
       </div>
     </div>
   )

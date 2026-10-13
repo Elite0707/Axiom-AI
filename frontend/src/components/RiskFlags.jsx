@@ -1,30 +1,34 @@
 import clsx from 'clsx'
-import { AlertTriangle, AlertCircle, Info, CheckCircle } from 'lucide-react'
+import { AlertTriangle, AlertCircle, Info, CheckCircle2 } from 'lucide-react'
 
 const levelConfig = {
   HIGH: {
     badge: 'badge-high',
-    bg: 'bg-red-500/5 border-red-500/20',
+    bg: 'bg-harvey-coral/5 border-harvey-coral/25',
     icon: AlertCircle,
-    iconClass: 'text-red-400',
+    iconClass: 'text-harvey-coral',
+    barColor: 'bg-harvey-coral',
   },
   MEDIUM: {
     badge: 'badge-medium',
-    bg: 'bg-amber-500/5 border-amber-500/20',
+    bg: 'bg-harvey-amber/5 border-harvey-amber/25',
     icon: AlertTriangle,
-    iconClass: 'text-amber-400',
+    iconClass: 'text-harvey-amber',
+    barColor: 'bg-harvey-amber',
   },
   LOW: {
     badge: 'badge-low',
-    bg: 'bg-green-500/5 border-green-500/20',
+    bg: 'bg-harvey-emerald/5 border-harvey-emerald/25',
     icon: Info,
-    iconClass: 'text-green-400',
+    iconClass: 'text-harvey-emerald',
+    barColor: 'bg-harvey-emerald',
   },
   UNKNOWN: {
     badge: 'badge-unknown',
-    bg: 'bg-gray-500/5 border-gray-500/20',
+    bg: 'bg-harvey-surface border-harvey-border',
     icon: Info,
-    iconClass: 'text-gray-400',
+    iconClass: 'text-harvey-muted',
+    barColor: 'bg-harvey-muted',
   },
 }
 
@@ -34,68 +38,88 @@ export default function RiskFlags({ riskFlags = [], overallRisk = 'UNKNOWN' }) {
   const highCount = riskFlags.filter(f => f.risk_level === 'HIGH').length
   const medCount = riskFlags.filter(f => f.risk_level === 'MEDIUM').length
   const lowCount = riskFlags.filter(f => f.risk_level === 'LOW').length
+  const total = riskFlags.length
 
   if (!riskFlags.length) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-axiom-muted gap-2">
-        <CheckCircle className="w-8 h-8 text-green-400" />
-        <p className="text-sm">No risk flags identified</p>
+      <div className="card p-12 flex flex-col items-center justify-center text-center">
+        <CheckCircle2 className="w-8 h-8 text-harvey-emerald mb-2" />
+        <h4 className="font-serif text-sm font-normal text-harvey-ivory mb-1">Zero Critical Liabilities Identified</h4>
+        <p className="text-xs text-harvey-muted max-w-sm">
+          No abnormal indemnity caps, MAC carve-outs, or non-compete deviations were flagged during analysis.
+        </p>
       </div>
     )
   }
 
   return (
-    <div className="space-y-4 animate-fade-in">
-      {/* Risk Summary Banner */}
-      <div className={clsx('border rounded-xl p-4 flex items-center gap-4', config.bg)}>
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-sm font-semibold text-axiom-text">Overall Risk Assessment</span>
-            <span className={config.badge}>{overallRisk}</span>
+    <div className="space-y-4 animate-fade-in font-sans">
+      {/* Executive Risk Ledger */}
+      <div className={clsx('card p-4 border flex flex-col sm:flex-row sm:items-center justify-between gap-4', config.bg)}>
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <h3 className="font-serif text-base text-harvey-ivory font-normal">Overall Transaction Risk</h3>
+            <span className={config.badge}>{overallRisk} RISK</span>
           </div>
-          <div className="flex gap-4 text-xs text-axiom-muted">
-            <span className="text-red-400 font-medium">{highCount} High</span>
-            <span className="text-amber-400 font-medium">{medCount} Medium</span>
-            <span className="text-green-400 font-medium">{lowCount} Low</span>
+          <p className="text-xs text-harvey-muted">
+            Aggregated legal liability index based on standard market precedents.
+          </p>
+        </div>
+
+        {/* Breakdown counters */}
+        <div className="flex items-center gap-3">
+          <div className="px-3 py-1.5 rounded bg-harvey-charcoal border border-harvey-border text-center">
+            <span className="block text-xs font-serif font-medium text-harvey-coral">{highCount}</span>
+            <span className="text-[9px] uppercase tracking-wider text-harvey-muted">High</span>
+          </div>
+          <div className="px-3 py-1.5 rounded bg-harvey-charcoal border border-harvey-border text-center">
+            <span className="block text-xs font-serif font-medium text-harvey-amber">{medCount}</span>
+            <span className="text-[9px] uppercase tracking-wider text-harvey-muted">Medium</span>
+          </div>
+          <div className="px-3 py-1.5 rounded bg-harvey-charcoal border border-harvey-border text-center">
+            <span className="block text-xs font-serif font-medium text-harvey-emerald">{lowCount}</span>
+            <span className="text-[9px] uppercase tracking-wider text-harvey-muted">Low</span>
           </div>
         </div>
       </div>
 
-      {/* Risk Flag List */}
-      <div className="space-y-3">
+      {/* Grouped Risk Flag Cards */}
+      <div className="space-y-4">
         {['HIGH', 'MEDIUM', 'LOW'].map(level => {
           const flags = riskFlags.filter(f => f.risk_level === level)
           if (!flags.length) return null
           const lvlConfig = levelConfig[level]
-          const Icon = lvlConfig.icon
 
           return (
-            <div key={level}>
-              <p className="section-title mb-2">{level} Risk ({flags.length})</p>
+            <div key={level} className="space-y-2">
+              <div className="flex items-center justify-between px-1">
+                <span className="section-title">{level} Exposure Clauses ({flags.length})</span>
+              </div>
+
               <div className="space-y-2">
                 {flags.map((flag, i) => (
                   <div
                     key={i}
-                    className={clsx(
-                      'border rounded-lg p-3.5 transition-all hover:scale-[1.005]',
-                      lvlConfig.bg
-                    )}
+                    className="card p-4 hover:border-harvey-muted/60 transition-colors bg-harvey-charcoal"
                   >
-                    <div className="flex items-start gap-3">
-                      <Icon className={clsx('w-4 h-4 mt-0.5 flex-shrink-0', lvlConfig.iconClass)} />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap mb-1">
-                          <span className="text-sm font-semibold text-axiom-text">{flag.clause}</span>
-                          <span className={lvlConfig.badge}>{flag.risk_level}</span>
-                          {flag.page_reference && (
-                            <span className="text-[10px] text-axiom-muted bg-axiom-border px-1.5 py-0.5 rounded">
-                              {flag.page_reference}
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-xs text-axiom-textDim leading-relaxed">{flag.description}</p>
+                    <div className="flex items-start justify-between gap-3 mb-2">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-serif text-sm font-normal text-harvey-ivory">
+                          {flag.clause}
+                        </span>
+                        <span className={lvlConfig.badge}>{flag.risk_level}</span>
                       </div>
+
+                      {flag.page_reference && (
+                        <span className="font-mono text-[10px] text-harvey-muted bg-harvey-surface px-2 py-0.5 rounded border border-harvey-borderSubtle flex-shrink-0">
+                          {flag.page_reference}
+                        </span>
+                      )}
                     </div>
+
+                    <p className="text-xs text-harvey-textDim leading-relaxed font-sans">
+                      {flag.description}
+                    </p>
                   </div>
                 ))}
               </div>

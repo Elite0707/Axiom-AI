@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
-  Briefcase, FileText, TrendingUp, Shield, Clock,
-  ArrowRight, CheckCircle, AlertCircle, Loader2, Cpu
+  Briefcase, FileText, Shield, ArrowRight,
+  CheckCircle2, AlertCircle, Loader2, Cpu, Database, Sparkles, Scale
 } from 'lucide-react'
 import { useStore } from '../store/useStore'
 import { healthApi } from '../lib/api'
@@ -13,102 +13,112 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchDocuments()
-    healthApi.check().then(r => setHealth(r.data)).catch(() => setHealth({ status: 'degraded' }))
+    healthApi.check()
+      .then(r => setHealth(r.data))
+      .catch(() => setHealth({ status: 'degraded' }))
   }, [])
 
   const readyDocs = documents.filter(d => d.status === 'ready').length
   const processingDocs = documents.filter(d => d.status === 'processing').length
 
   return (
-    <div className="space-y-6 max-w-7xl animate-fade-in">
-      {/* Welcome Banner */}
-      <div className="relative overflow-hidden card p-6">
-        <div className="absolute inset-0 bg-gradient-to-br from-axiom-accent/10 via-transparent to-transparent" />
-        <div className="relative">
-          <div className="flex items-start justify-between">
-            <div>
-              <h2 className="text-xl font-bold text-white mb-1">
-                Welcome to <span className="text-axiom-accent">Axiom AI</span>
-              </h2>
-              <p className="text-sm text-axiom-textDim max-w-lg">
-                Your AI-powered legal compliance platform. Upload M&A documents and get instant due diligence analysis, risk assessment, and intelligent Q&A — all running locally on your machine.
-              </p>
-            </div>
-            <div className="hidden md:block">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-axiom-accent to-blue-700 flex items-center justify-center">
-                <Shield className="w-8 h-8 text-white" />
-              </div>
-            </div>
+    <div className="space-y-8 max-w-6xl mx-auto font-sans animate-fade-in">
+      {/* Editorial Hero Header (Inspired by Harvey's landing & command center) */}
+      <div className="card p-8 bg-harvey-charcoal relative overflow-hidden border-harvey-border">
+        <div className="max-w-2xl space-y-3 relative z-10">
+          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-harvey-surface border border-harvey-borderSubtle text-[11px] text-harvey-gold font-medium">
+            <Sparkles className="w-3 h-3 text-harvey-gold" />
+            <span>Professional Class Legal AI · M&A Edition</span>
           </div>
-          <div className="flex gap-3 mt-4">
-            <Link to="/ma" className="btn-primary text-sm">
-              <Briefcase className="w-4 h-4" />
-              Start M&A Analysis
-              <ArrowRight className="w-4 h-4" />
+
+          <h2 className="text-3xl font-serif text-harvey-ivory font-normal tracking-tight leading-tight">
+            Precision Intelligence for Complex Transactions
+          </h2>
+
+          <p className="text-xs text-harvey-muted leading-relaxed">
+            Automate M&A contract review, identify unfavorable indemnity caps, detect buried material adverse change (MAC) qualifiers, and converse directly with deal agreements—completely airgapped with local LLM inference.
+          </p>
+
+          <div className="pt-2">
+            <Link to="/ma" className="btn-primary inline-flex">
+              <Briefcase className="w-3.5 h-3.5" />
+              <span>Launch M&A Due Diligence Suite</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
         </div>
+
+        {/* Subtle decorative watermark */}
+        <div className="absolute right-8 top-1/2 -translate-y-1/2 opacity-5 pointer-events-none select-none font-serif text-9xl text-harvey-ivory hidden lg:block">
+          :A:
+        </div>
       </div>
 
-      {/* Stats */}
+      {/* Metric Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="stat-card">
-          <div className="flex items-center justify-between">
-            <span className="section-title">Total Documents</span>
-            <FileText className="w-4 h-4 text-axiom-accent" />
+          <span className="section-title">Indexed Documents</span>
+          <div className="mt-2">
+            <p className="font-serif text-2xl text-harvey-ivory font-normal">{documents.length}</p>
+            <p className="text-[11px] text-harvey-muted mt-0.5">{readyDocs} Ready · {processingDocs} Indexing</p>
           </div>
-          <p className="text-2xl font-bold text-white mt-1">{documents.length}</p>
-          <p className="text-xs text-axiom-muted">{readyDocs} ready · {processingDocs} processing</p>
         </div>
 
         <div className="stat-card">
-          <div className="flex items-center justify-between">
-            <span className="section-title">Active Module</span>
-            <Briefcase className="w-4 h-4 text-axiom-gold" />
+          <span className="section-title">Active Suite</span>
+          <div className="mt-2">
+            <p className="font-serif text-2xl text-harvey-ivory font-normal">M&A Due Diligence</p>
+            <p className="text-[11px] text-harvey-gold mt-0.5">Automated Term Extraction</p>
           </div>
-          <p className="text-lg font-bold text-white mt-1">M&A</p>
-          <p className="text-xs text-axiom-muted">Due Diligence</p>
         </div>
 
         <div className="stat-card">
-          <div className="flex items-center justify-between">
-            <span className="section-title">AI Engine</span>
-            <Cpu className="w-4 h-4 text-green-400" />
+          <span className="section-title">Inference Engine</span>
+          <div className="mt-2">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-harvey-emerald" />
+              <p className="font-serif text-xl text-harvey-ivory font-normal">Local LLM</p>
+            </div>
+            <p className="text-[11px] text-harvey-muted mt-0.5">Ollama · Zero API Egress</p>
           </div>
-          <p className="text-lg font-bold text-white mt-1">Local</p>
-          <p className="text-xs text-axiom-muted">Ollama · No API costs</p>
         </div>
 
         <div className="stat-card">
-          <div className="flex items-center justify-between">
-            <span className="section-title">System Status</span>
-            {health?.status === 'healthy'
-              ? <CheckCircle className="w-4 h-4 text-green-400" />
-              : <AlertCircle className="w-4 h-4 text-amber-400" />
-            }
+          <span className="section-title">Core Diagnostic</span>
+          <div className="mt-2">
+            <div className="flex items-center gap-1.5">
+              {health?.status === 'healthy' ? (
+                <>
+                  <CheckCircle2 className="w-4 h-4 text-harvey-emerald" />
+                  <p className="font-serif text-xl text-harvey-ivory font-normal">Operational</p>
+                </>
+              ) : (
+                <>
+                  <AlertCircle className="w-4 h-4 text-harvey-amber" />
+                  <p className="font-serif text-xl text-harvey-amber font-normal">Degraded</p>
+                </>
+              )}
+            </div>
+            <p className="text-[11px] text-harvey-muted mt-0.5 truncate">
+              {health?.configured_model || 'Connecting...'}
+            </p>
           </div>
-          <p className={`text-lg font-bold mt-1 ${health?.status === 'healthy' ? 'text-green-400' : 'text-amber-400'}`}>
-            {health?.status === 'healthy' ? 'Healthy' : health?.status === 'degraded' ? 'Degraded' : '...'}
-          </p>
-          <p className="text-xs text-axiom-muted">
-            {health?.configured_model || 'Checking Ollama...'}
-          </p>
         </div>
       </div>
 
-      {/* Ollama warning if offline */}
+      {/* Ollama Diagnostic Alert if Degraded */}
       {health?.status === 'degraded' && (
-        <div className="card p-4 border-amber-500/25 bg-amber-500/5">
+        <div className="card p-4 border-harvey-amber/30 bg-harvey-amber/5">
           <div className="flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-amber-400 mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="text-sm font-semibold text-amber-400 mb-1">Ollama Not Detected</p>
-              <p className="text-xs text-axiom-textDim mb-2">
-                The AI engine is offline. Please start Ollama and pull the required models.
+            <AlertCircle className="w-4 h-4 text-harvey-amber mt-0.5 flex-shrink-0" />
+            <div className="space-y-1">
+              <p className="text-xs font-semibold text-harvey-amber">Ollama Engine Offline</p>
+              <p className="text-xs text-harvey-muted">
+                Start Ollama locally to power AI vector search and generation without cloud dependencies.
               </p>
-              <div className="space-y-1">
+              <div className="pt-1 space-y-1">
                 {(health.instructions || []).map((step, i) => (
-                  <code key={i} className="block text-xs bg-axiom-card border border-axiom-border px-2 py-1 rounded text-axiom-text font-mono">
+                  <code key={i} className="block text-[11px] bg-harvey-obsidian px-2.5 py-1 rounded text-harvey-ivory font-mono border border-harvey-borderSubtle">
                     {step}
                   </code>
                 ))}
@@ -118,56 +128,58 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Recent Documents */}
+      {/* Recent Ledger */}
       <div className="card overflow-hidden">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-axiom-border">
+        <div className="px-5 py-4 border-b border-harvey-border flex items-center justify-between bg-harvey-surface/50">
           <div className="flex items-center gap-2">
-            <FileText className="w-4 h-4 text-axiom-accent" />
-            <h3 className="text-sm font-semibold text-white">Recent Documents</h3>
+            <FileText className="w-4 h-4 text-harvey-muted" />
+            <h3 className="font-serif text-base text-harvey-ivory font-normal">Recent Agreement Repository</h3>
           </div>
-          <Link to="/ma" className="text-xs text-axiom-accent hover:underline flex items-center gap-1">
-            View all <ArrowRight className="w-3 h-3" />
+          <Link to="/ma" className="text-xs text-harvey-ivory hover:underline flex items-center gap-1 font-medium">
+            <span>Manage All</span>
+            <ArrowRight className="w-3 h-3" />
           </Link>
         </div>
 
         {documentsLoading ? (
           <div className="p-5 space-y-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className="flex gap-3 items-center">
-                <div className="skeleton w-8 h-8 rounded-lg" />
-                <div className="flex-1 space-y-1.5">
-                  <div className="skeleton h-3 w-48 rounded" />
-                  <div className="skeleton h-2 w-32 rounded" />
-                </div>
-              </div>
+              <div key={i} className="skeleton h-12 rounded" />
             ))}
           </div>
         ) : documents.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-axiom-muted gap-2">
-            <FileText className="w-8 h-8" />
-            <p className="text-sm">No documents yet</p>
-            <Link to="/ma" className="btn-primary text-xs mt-1">Upload your first document</Link>
+          <div className="p-12 text-center text-harvey-muted space-y-2">
+            <FileText className="w-8 h-8 mx-auto text-harvey-border" />
+            <p className="font-serif text-sm text-harvey-ivory">No Agreements Uploaded Yet</p>
+            <p className="text-xs text-harvey-muted max-w-sm mx-auto">
+              Upload sample M&A contracts to immediately run automated risk extractions.
+            </p>
+            <div className="pt-2">
+              <Link to="/ma" className="btn-secondary text-xs inline-flex">
+                Upload First Contract
+              </Link>
+            </div>
           </div>
         ) : (
-          <div className="divide-y divide-axiom-border">
+          <div className="divide-y divide-harvey-borderSubtle">
             {documents.slice(0, 5).map(doc => (
-              <div key={doc.id} className="flex items-center gap-3 px-5 py-3 hover:bg-axiom-card/50 transition-colors">
-                <div className="w-8 h-8 rounded-lg bg-axiom-accent/10 border border-axiom-accent/20 flex items-center justify-center flex-shrink-0">
-                  <FileText className="w-4 h-4 text-axiom-accent" />
+              <div key={doc.id} className="px-5 py-3.5 flex items-center gap-4 hover:bg-harvey-surface/60 transition-colors">
+                <div className="w-7 h-7 rounded border border-harvey-border flex items-center justify-center bg-harvey-surface flex-shrink-0">
+                  <FileText className="w-3.5 h-3.5 text-harvey-muted" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-axiom-text truncate">{doc.original_name}</p>
-                  <p className="text-xs text-axiom-muted">
-                    {doc.page_count} pages · {doc.chunk_count} chunks · {new Date(doc.uploaded_at).toLocaleDateString()}
+                  <p className="text-xs font-medium text-harvey-ivory truncate">{doc.original_name}</p>
+                  <p className="text-[11px] text-harvey-muted">
+                    {doc.page_count} Pages · {doc.chunk_count} Indexed Chunks · {new Date(doc.uploaded_at).toLocaleDateString()}
                   </p>
                 </div>
                 <div>
                   {doc.status === 'ready' && <span className="badge-low">Ready</span>}
                   {doc.status === 'processing' && (
-                    <div className="flex items-center gap-1 text-xs text-axiom-accent">
-                      <Loader2 className="w-3 h-3 animate-spin" />
-                      Processing
-                    </div>
+                    <span className="flex items-center gap-1 text-[11px] text-harvey-muted">
+                      <Loader2 className="w-3 h-3 animate-spin text-harvey-ivory" />
+                      Indexing
+                    </span>
                   )}
                   {doc.status === 'error' && <span className="badge-high">Error</span>}
                 </div>
@@ -177,42 +189,59 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* Feature Cards */}
-      <div>
-        <h3 className="text-sm font-semibold text-white mb-3">Platform Modules</h3>
+      {/* Platform Practice Areas Grid */}
+      <div className="space-y-3">
+        <span className="section-title">Platform Practice Areas</span>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Link to="/ma" className="card p-5 hover:border-axiom-accent/40 hover:shadow-glow-blue transition-all group">
-            <div className="w-10 h-10 rounded-xl bg-axiom-accent/10 border border-axiom-accent/20 flex items-center justify-center mb-3 group-hover:bg-axiom-accent/20 transition-colors">
-              <Briefcase className="w-5 h-5 text-axiom-accent" />
+          <Link to="/ma" className="card p-5 hover:border-harvey-muted transition-all group flex flex-col justify-between">
+            <div className="space-y-2">
+              <div className="w-8 h-8 rounded border border-harvey-border flex items-center justify-center bg-harvey-surface text-harvey-gold">
+                <Briefcase className="w-4 h-4" />
+              </div>
+              <h4 className="font-serif text-base text-harvey-ivory font-normal group-hover:underline">
+                M&A Due Diligence Suite
+              </h4>
+              <p className="text-xs text-harvey-muted leading-relaxed">
+                Automated deal term extraction, representations and warranties auditing, and liability matrices.
+              </p>
             </div>
-            <h4 className="text-sm font-semibold text-white mb-1">M&A Due Diligence</h4>
-            <p className="text-xs text-axiom-muted leading-relaxed">
-              Upload M&A documents for automated party extraction, risk analysis, and compliance review.
-            </p>
-            <div className="mt-3 flex items-center gap-1 text-xs text-axiom-accent">
-              Open module <ArrowRight className="w-3 h-3" />
+            <div className="pt-4 flex items-center gap-1.5 text-xs text-harvey-ivory font-medium">
+              <span>Open Suite</span>
+              <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-1" />
             </div>
           </Link>
 
-          <div className="card p-5 opacity-50 cursor-not-allowed">
-            <div className="w-10 h-10 rounded-xl bg-axiom-border flex items-center justify-center mb-3">
-              <FileText className="w-5 h-5 text-axiom-muted" />
+          <div className="card p-5 opacity-60 cursor-not-allowed flex flex-col justify-between">
+            <div className="space-y-2">
+              <div className="w-8 h-8 rounded border border-harvey-borderSubtle flex items-center justify-center bg-harvey-surface text-harvey-muted">
+                <Scale className="w-4 h-4" />
+              </div>
+              <h4 className="font-serif text-base text-harvey-ivory font-normal">
+                Contract Intelligence
+              </h4>
+              <p className="text-xs text-harvey-muted leading-relaxed">
+                Automated redlining, playbook alignment, and clause deviations across portfolios.
+              </p>
             </div>
-            <h4 className="text-sm font-semibold text-axiom-textDim mb-1">Contract Review</h4>
-            <p className="text-xs text-axiom-muted leading-relaxed">AI-powered contract analysis, redlining, and clause comparison.</p>
-            <div className="mt-3">
-              <span className="badge-unknown">Coming Soon</span>
+            <div className="pt-4">
+              <span className="badge-unknown">Phase 2 Planned</span>
             </div>
           </div>
 
-          <div className="card p-5 opacity-50 cursor-not-allowed">
-            <div className="w-10 h-10 rounded-xl bg-axiom-border flex items-center justify-center mb-3">
-              <Shield className="w-5 h-5 text-axiom-muted" />
+          <div className="card p-5 opacity-60 cursor-not-allowed flex flex-col justify-between">
+            <div className="space-y-2">
+              <div className="w-8 h-8 rounded border border-harvey-borderSubtle flex items-center justify-center bg-harvey-surface text-harvey-muted">
+                <Database className="w-4 h-4" />
+              </div>
+              <h4 className="font-serif text-base text-harvey-ivory font-normal">
+                Firm Knowledge Vault
+              </h4>
+              <p className="text-xs text-harvey-muted leading-relaxed">
+                Enterprise multi-document repositories with semantic cross-matter synthesis.
+              </p>
             </div>
-            <h4 className="text-sm font-semibold text-axiom-textDim mb-1">GDPR Compliance</h4>
-            <p className="text-xs text-axiom-muted leading-relaxed">Automated GDPR compliance auditing for privacy policies and DPAs.</p>
-            <div className="mt-3">
-              <span className="badge-unknown">Coming Soon</span>
+            <div className="pt-4">
+              <span className="badge-unknown">Phase 3 Planned</span>
             </div>
           </div>
         </div>

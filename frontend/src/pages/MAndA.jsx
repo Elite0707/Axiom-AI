@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import {
   Briefcase, FileText, Trash2, PlayCircle, Loader2,
   Users, DollarSign, Calendar, Scale, AlertTriangle,
-  ChevronRight, CheckSquare, List, MessageSquare, X
+  ChevronRight, CheckSquare, List, MessageSquare, Shield,
+  ArrowRight, Sparkles, Building2
 } from 'lucide-react'
 import { useStore } from '../store/useStore'
 import { documentsApi, analysisApi } from '../lib/api'
@@ -12,37 +13,41 @@ import ChatInterface from '../components/ChatInterface'
 import clsx from 'clsx'
 
 const TABS = [
-  { id: 'overview', label: 'Overview', icon: Briefcase },
+  { id: 'overview', label: 'Executive Summary', icon: Briefcase },
   { id: 'parties', label: 'Parties & Terms', icon: Users },
   { id: 'clauses', label: 'Key Clauses', icon: List },
-  { id: 'risks', label: 'Risk Flags', icon: AlertTriangle },
-  { id: 'chat', label: 'Ask AI', icon: MessageSquare },
+  { id: 'risks', label: 'Risk Assessment', icon: AlertTriangle },
+  { id: 'chat', label: 'Legal Assistant', icon: MessageSquare },
 ]
 
-function InfoRow({ label, value }) {
+function TermRow({ label, value }) {
   if (!value) return null
   return (
-    <div className="flex gap-3 py-2 border-b border-axiom-border last:border-0">
-      <span className="text-xs text-axiom-muted w-36 flex-shrink-0 pt-0.5">{label}</span>
-      <span className="text-xs text-axiom-text leading-relaxed flex-1">{value}</span>
+    <div className="flex items-baseline justify-between py-2 border-b border-harvey-borderSubtle last:border-0 text-xs">
+      <span className="text-harvey-muted text-[11px] uppercase tracking-wider font-medium">{label}</span>
+      <span className="text-harvey-ivory text-right font-medium max-w-sm truncate">{value}</span>
     </div>
   )
 }
 
-function ClauseList({ title, items, icon: Icon }) {
+function ClauseCard({ title, items, icon: Icon }) {
   if (!items?.length) return null
   return (
-    <div className="card p-4">
-      <div className="flex items-center gap-2 mb-3">
-        <Icon className="w-4 h-4 text-axiom-accent" />
-        <h4 className="text-sm font-semibold text-white">{title}</h4>
-        <span className="text-xs text-axiom-muted bg-axiom-border px-1.5 py-0.5 rounded-full">{items.length}</span>
+    <div className="card p-4 space-y-3 bg-harvey-charcoal">
+      <div className="flex items-center justify-between pb-2 border-b border-harvey-borderSubtle">
+        <div className="flex items-center gap-2">
+          <Icon className="w-3.5 h-3.5 text-harvey-muted" />
+          <h4 className="font-serif text-sm text-harvey-ivory font-normal">{title}</h4>
+        </div>
+        <span className="text-[10px] font-mono text-harvey-muted bg-harvey-surface px-1.5 py-0.5 rounded border border-harvey-borderSubtle">
+          {items.length}
+        </span>
       </div>
       <ul className="space-y-2">
         {items.map((item, i) => (
-          <li key={i} className="flex items-start gap-2 text-xs text-axiom-textDim">
-            <ChevronRight className="w-3 h-3 text-axiom-accent mt-0.5 flex-shrink-0" />
-            <span className="leading-relaxed">{item}</span>
+          <li key={i} className="flex items-start gap-2 text-xs text-harvey-textDim leading-relaxed">
+            <span className="text-harvey-muted font-mono text-[10px] mt-0.5 flex-shrink-0">•</span>
+            <span>{item}</span>
           </li>
         ))}
       </ul>
@@ -51,13 +56,18 @@ function ClauseList({ title, items, icon: Icon }) {
 }
 
 export default function MAndA() {
-  const { documents, fetchDocuments, documentsLoading, selectedDocument, setSelectedDocument,
-    removeDocument, currentAnalysis, startAnalysis, setCurrentAnalysis } = useStore()
+  const {
+    documents, fetchDocuments, documentsLoading, selectedDocument, setSelectedDocument,
+    removeDocument, currentAnalysis, startAnalysis, setCurrentAnalysis
+  } = useStore()
+
   const [activeTab, setActiveTab] = useState('overview')
   const [analysisLoading, setAnalysisLoading] = useState(false)
   const [analysisError, setAnalysisError] = useState(null)
 
-  useEffect(() => { fetchDocuments() }, [])
+  useEffect(() => {
+    fetchDocuments()
+  }, [])
 
   const handleDeleteDoc = async (doc) => {
     if (!confirm(`Delete "${doc.original_name}"?`)) return
@@ -74,7 +84,7 @@ export default function MAndA() {
     setCurrentAnalysis(null)
     setActiveTab('overview')
     setAnalysisError(null)
-    // Load latest analysis for this document
+
     try {
       const { data } = await analysisApi.getForDocument(doc.id)
       if (data?.length > 0 && data[0].status === 'done') {
@@ -91,7 +101,7 @@ export default function MAndA() {
     try {
       await startAnalysis(selectedDocument.id)
     } catch (err) {
-      setAnalysisError(err.response?.data?.detail || 'Analysis failed. Please try again.')
+      setAnalysisError(err.response?.data?.detail || 'Analysis pipeline encountered an error.')
     } finally {
       setAnalysisLoading(false)
     }
@@ -100,31 +110,38 @@ export default function MAndA() {
   const result = currentAnalysis?.result
 
   const riskBadgeClass = {
-    HIGH: 'badge-high', MEDIUM: 'badge-medium', LOW: 'badge-low'
+    HIGH: 'badge-high',
+    MEDIUM: 'badge-medium',
+    LOW: 'badge-low'
   }[result?.overall_risk_level] || 'badge-unknown'
 
   return (
-    <div className="flex gap-6 h-[calc(100vh-8rem)] max-w-[1600px]">
-      {/* ── Left Panel: Document List ───────────────────────────── */}
-      <div className="w-72 flex-shrink-0 flex flex-col gap-4">
+    <div className="flex gap-6 h-[calc(100vh-7rem)] max-w-[1600px] mx-auto font-sans">
+      {/* ── Left Ledger: Contract Vault ───────────────────────────── */}
+      <div className="w-80 flex-shrink-0 flex flex-col gap-4">
         <DocumentUpload module="ma" onUploaded={handleSelectDoc} />
 
-        <div className="card flex-1 overflow-hidden flex flex-col">
-          <div className="px-4 py-3 border-b border-axiom-border flex items-center gap-2">
-            <FileText className="w-4 h-4 text-axiom-accent" />
-            <span className="text-sm font-semibold text-white">Documents</span>
-            <span className="ml-auto text-xs text-axiom-muted bg-axiom-border px-1.5 py-0.5 rounded-full">{documents.length}</span>
+        <div className="card flex-1 overflow-hidden flex flex-col bg-harvey-charcoal">
+          <div className="px-4 py-3 border-b border-harvey-border flex items-center justify-between bg-harvey-surface/40">
+            <div className="flex items-center gap-2">
+              <FileText className="w-3.5 h-3.5 text-harvey-muted" />
+              <span className="font-serif text-sm font-normal text-harvey-ivory">Contract Vault</span>
+            </div>
+            <span className="text-[10px] font-mono text-harvey-muted bg-harvey-surface px-1.5 py-0.5 rounded border border-harvey-borderSubtle">
+              {documents.length}
+            </span>
           </div>
 
-          <div className="overflow-y-auto flex-1 p-2">
+          <div className="overflow-y-auto flex-1 p-2 space-y-1">
             {documentsLoading ? (
-              <div className="space-y-2 p-2">
-                {[1, 2].map(i => <div key={i} className="skeleton h-12 rounded-lg" />)}
+              <div className="space-y-2 p-1">
+                {[1, 2, 3].map(i => <div key={i} className="skeleton h-12 rounded" />)}
               </div>
             ) : documents.length === 0 ? (
-              <div className="text-center py-8 text-axiom-muted">
-                <FileText className="w-6 h-6 mx-auto mb-2" />
-                <p className="text-xs">No documents yet</p>
+              <div className="text-center py-12 text-harvey-muted px-4 space-y-1.5">
+                <FileText className="w-6 h-6 mx-auto text-harvey-border" />
+                <p className="font-serif text-xs text-harvey-ivory">No Agreements Found</p>
+                <p className="text-[11px] text-harvey-muted">Drop a contract PDF above to begin.</p>
               </div>
             ) : (
               documents.map(doc => (
@@ -132,26 +149,37 @@ export default function MAndA() {
                   key={doc.id}
                   onClick={() => doc.status === 'ready' && handleSelectDoc(doc)}
                   className={clsx(
-                    'group flex items-start gap-2.5 p-2.5 rounded-lg mb-1 transition-all',
-                    doc.status === 'ready' ? 'cursor-pointer hover:bg-axiom-border' : 'cursor-not-allowed opacity-60',
-                    selectedDocument?.id === doc.id && 'bg-axiom-accent/10 border border-axiom-accent/25'
+                    'group flex items-start gap-2.5 p-2.5 rounded transition-all select-none',
+                    doc.status === 'ready' ? 'cursor-pointer hover:bg-harvey-surface' : 'cursor-not-allowed opacity-50',
+                    selectedDocument?.id === doc.id
+                      ? 'bg-harvey-surface border border-harvey-border shadow-sm'
+                      : 'border border-transparent'
                   )}
                 >
-                  <FileText className={clsx('w-4 h-4 mt-0.5 flex-shrink-0', selectedDocument?.id === doc.id ? 'text-axiom-accent' : 'text-axiom-muted')} />
+                  <FileText className={clsx(
+                    'w-3.5 h-3.5 mt-0.5 flex-shrink-0 transition-colors',
+                    selectedDocument?.id === doc.id ? 'text-harvey-ivory' : 'text-harvey-muted'
+                  )} />
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-axiom-text truncate">{doc.original_name}</p>
+                    <p className="text-xs font-medium text-harvey-ivory truncate">{doc.original_name}</p>
                     <div className="flex items-center gap-1.5 mt-0.5">
                       {doc.status === 'ready' && <span className="badge-low text-[9px]">Ready</span>}
-                      {doc.status === 'processing' && <span className="flex items-center gap-1 text-[9px] text-axiom-accent"><Loader2 className="w-2.5 h-2.5 animate-spin" />Processing</span>}
+                      {doc.status === 'processing' && (
+                        <span className="flex items-center gap-1 text-[9px] text-harvey-muted">
+                          <Loader2 className="w-2.5 h-2.5 animate-spin text-harvey-ivory" />
+                          Indexing
+                        </span>
+                      )}
                       {doc.status === 'error' && <span className="badge-high text-[9px]">Error</span>}
-                      <span className="text-[9px] text-axiom-muted">{doc.page_count}p</span>
+                      <span className="text-[10px] text-harvey-muted font-mono">{doc.page_count}p</span>
                     </div>
                   </div>
                   <button
                     onClick={(e) => { e.stopPropagation(); handleDeleteDoc(doc) }}
-                    className="opacity-0 group-hover:opacity-100 text-axiom-muted hover:text-red-400 transition-all p-0.5"
+                    className="opacity-0 group-hover:opacity-100 text-harvey-muted hover:text-harvey-coral transition-all p-1"
+                    title="Remove from vault"
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    <Trash2 className="w-3 h-3" />
                   </button>
                 </div>
               ))
@@ -160,79 +188,89 @@ export default function MAndA() {
         </div>
       </div>
 
-      {/* ── Right Panel: Analysis ───────────────────────────────── */}
+      {/* ── Right Panel: Due Diligence Analysis Console ───────────── */}
       <div className="flex-1 min-w-0 flex flex-col">
         {!selectedDocument ? (
-          <div className="flex-1 card flex flex-col items-center justify-center text-axiom-muted">
-            <Briefcase className="w-12 h-12 mb-4 text-axiom-border" />
-            <h3 className="text-base font-semibold text-axiom-textDim mb-1">Select a Document</h3>
-            <p className="text-sm text-center max-w-sm">
-              Upload an M&A document and select it to begin AI-powered due diligence analysis.
+          <div className="flex-1 card flex flex-col items-center justify-center text-center p-8 bg-harvey-charcoal">
+            <Briefcase className="w-10 h-10 mb-3 text-harvey-border" />
+            <h3 className="font-serif text-lg font-normal text-harvey-ivory mb-1">Select Agreement to Audit</h3>
+            <p className="text-xs text-harvey-muted max-w-sm">
+              Choose an agreement from your Contract Vault or upload a new M&A document to execute automated legal diligence.
             </p>
           </div>
         ) : (
           <div className="flex-1 flex flex-col overflow-hidden">
-            {/* Document Header */}
-            <div className="card px-5 py-4 mb-4 flex items-center gap-4 flex-shrink-0">
-              <div className="w-10 h-10 rounded-xl bg-axiom-accent/10 border border-axiom-accent/20 flex items-center justify-center">
-                <FileText className="w-5 h-5 text-axiom-accent" />
+            {/* Agreement Console Header */}
+            <div className="card px-5 py-3.5 mb-3 flex items-center justify-between gap-4 flex-shrink-0 bg-harvey-charcoal">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-8 h-8 rounded border border-harvey-border flex items-center justify-center bg-harvey-surface flex-shrink-0">
+                  <FileText className="w-4 h-4 text-harvey-muted" />
+                </div>
+                <div className="min-w-0">
+                  <h2 className="font-serif text-base text-harvey-ivory font-normal truncate">
+                    {selectedDocument.original_name}
+                  </h2>
+                  <div className="flex items-center gap-2 text-[11px] text-harvey-muted">
+                    <span className="font-mono">{selectedDocument.page_count} Pages</span>
+                    <span>·</span>
+                    <span className="font-mono">{selectedDocument.chunk_count} Chunks</span>
+                    {result && (
+                      <>
+                        <span>·</span>
+                        <span className={riskBadgeClass}>{result.overall_risk_level} RISK</span>
+                      </>
+                    )}
+                  </div>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <h2 className="text-sm font-bold text-white truncate">{selectedDocument.original_name}</h2>
-                <p className="text-xs text-axiom-muted">
-                  {selectedDocument.page_count} pages · {selectedDocument.chunk_count} indexed chunks
-                  {result && (
-                    <> · <span className={riskBadgeClass}>{result.overall_risk_level} RISK</span></>
-                  )}
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
+
+              <div className="flex items-center gap-2 flex-shrink-0">
                 {currentAnalysis?.status === 'running' ? (
-                  <div className="flex items-center gap-2 text-xs text-axiom-accent">
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Analyzing...
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded bg-harvey-surface border border-harvey-border text-xs text-harvey-ivory">
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Analyzing clauses...</span>
                   </div>
                 ) : (
                   <button
                     onClick={handleRunAnalysis}
                     disabled={analysisLoading || currentAnalysis?.status === 'running'}
-                    className="btn-primary text-xs py-2"
+                    className="btn-primary"
                   >
-                    <PlayCircle className="w-4 h-4" />
-                    {result ? 'Re-Analyze' : 'Run Analysis'}
+                    <PlayCircle className="w-3.5 h-3.5" />
+                    <span>{result ? 'Re-Audit Contract' : 'Run Due Diligence'}</span>
                   </button>
                 )}
               </div>
             </div>
 
             {analysisError && (
-              <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3 mb-4 text-red-400 text-sm flex-shrink-0">
+              <div className="flex items-center gap-2 bg-harvey-coral/10 border border-harvey-coral/30 rounded p-3 mb-3 text-harvey-coral text-xs flex-shrink-0">
                 <AlertTriangle className="w-4 h-4 flex-shrink-0" />
-                {analysisError}
+                <span>{analysisError}</span>
               </div>
             )}
 
-            {/* Tabs */}
-            <div className="flex gap-1 border-b border-axiom-border mb-4 flex-shrink-0 overflow-x-auto">
+            {/* Editorial Tabs */}
+            <div className="flex gap-1 border-b border-harvey-border mb-3 flex-shrink-0 overflow-x-auto select-none">
               {TABS.map(({ id, label, icon: Icon }) => (
                 <button
                   key={id}
                   onClick={() => setActiveTab(id)}
                   className={clsx(
-                    'flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium border-b-2 transition-all whitespace-nowrap',
+                    'flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium border-b-2 transition-all whitespace-nowrap',
                     activeTab === id
-                      ? 'border-axiom-accent text-axiom-accent'
-                      : 'border-transparent text-axiom-muted hover:text-axiom-text hover:border-axiom-border'
+                      ? 'border-harvey-ivory text-harvey-ivory'
+                      : 'border-transparent text-harvey-muted hover:text-harvey-cream hover:border-harvey-border'
                   )}
                 >
                   <Icon className="w-3.5 h-3.5" />
-                  {label}
+                  <span>{label}</span>
                   {id === 'risks' && result?.risk_flags?.length > 0 && (
                     <span className={clsx(
-                      'text-[9px] font-bold px-1.5 py-0.5 rounded-full',
-                      result.overall_risk_level === 'HIGH' ? 'bg-red-500/20 text-red-400' :
-                        result.overall_risk_level === 'MEDIUM' ? 'bg-amber-500/20 text-amber-400' :
-                          'bg-green-500/20 text-green-400'
+                      'text-[9px] font-mono px-1.5 py-0.2 rounded font-medium',
+                      result.overall_risk_level === 'HIGH' ? 'bg-harvey-coral/20 text-harvey-coral' :
+                        result.overall_risk_level === 'MEDIUM' ? 'bg-harvey-amber/20 text-harvey-amber' :
+                          'bg-harvey-emerald/20 text-harvey-emerald'
                     )}>
                       {result.risk_flags.length}
                     </span>
@@ -241,76 +279,77 @@ export default function MAndA() {
               ))}
             </div>
 
-            {/* Tab Content */}
-            <div className="flex-1 overflow-y-auto">
+            {/* Tab Body */}
+            <div className="flex-1 overflow-y-auto pr-1">
               {/* ── OVERVIEW TAB ─────────────────────────────────── */}
               {activeTab === 'overview' && (
                 <div className="space-y-4 animate-fade-in">
                   {!result ? (
                     currentAnalysis?.status === 'running' ? (
-                      <div className="card p-8 flex flex-col items-center gap-4">
-                        <div className="w-16 h-16 rounded-full bg-axiom-accent/10 border border-axiom-accent/20 flex items-center justify-center">
-                          <Loader2 className="w-8 h-8 text-axiom-accent animate-spin" />
-                        </div>
-                        <div className="text-center">
-                          <p className="text-sm font-semibold text-white mb-1">AI Analysis Running</p>
-                          <p className="text-xs text-axiom-muted">
-                            Extracting deal terms, parties, and risk factors...<br />
-                            This may take 1–3 minutes depending on your hardware.
-                          </p>
-                        </div>
+                      <div className="card p-12 flex flex-col items-center justify-center text-center gap-3 bg-harvey-charcoal">
+                        <Loader2 className="w-8 h-8 text-harvey-ivory animate-spin" />
+                        <h4 className="font-serif text-base text-harvey-ivory font-normal">Extracting Deal Architecture</h4>
+                        <p className="text-xs text-harvey-muted max-w-sm">
+                          Evaluating representations, warranties, indemnity caps, and termination rights with local LLM.
+                        </p>
                       </div>
                     ) : (
-                      <div className="card p-8 flex flex-col items-center gap-4 text-axiom-muted">
-                        <PlayCircle className="w-12 h-12 text-axiom-border" />
-                        <div className="text-center">
-                          <p className="text-sm font-semibold text-axiom-textDim mb-1">No Analysis Yet</p>
-                          <p className="text-xs">Click "Run Analysis" to start AI-powered M&A due diligence.</p>
+                      <div className="card p-12 flex flex-col items-center justify-center text-center text-harvey-muted gap-3 bg-harvey-charcoal">
+                        <PlayCircle className="w-10 h-10 text-harvey-border" />
+                        <div>
+                          <h4 className="font-serif text-base text-harvey-ivory font-normal mb-1">Diligence Pending</h4>
+                          <p className="text-xs text-harvey-muted max-w-sm">
+                            Click "Run Due Diligence" above to trigger automated clause synthesis.
+                          </p>
                         </div>
                       </div>
                     )
                   ) : (
                     <>
-                      {/* Executive Summary */}
+                      {/* Executive Summary Card */}
                       {result.executive_summary && (
-                        <div className="card p-5">
-                          <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
-                            <Briefcase className="w-4 h-4 text-axiom-accent" />
-                            Executive Summary
-                          </h3>
-                          <p className="text-xs text-axiom-textDim leading-relaxed whitespace-pre-line">{result.executive_summary}</p>
+                        <div className="card p-5 space-y-2.5 bg-harvey-charcoal">
+                          <div className="flex items-center gap-2 pb-2 border-b border-harvey-borderSubtle">
+                            <Briefcase className="w-3.5 h-3.5 text-harvey-gold" />
+                            <h3 className="font-serif text-base font-normal text-harvey-ivory">Executive Diligence Summary</h3>
+                          </div>
+                          <p className="text-xs text-harvey-cream leading-relaxed whitespace-pre-line font-sans">
+                            {result.executive_summary}
+                          </p>
                         </div>
                       )}
 
-                      {/* Deal Info */}
-                      <div className="card p-5">
-                        <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
-                          <DollarSign className="w-4 h-4 text-axiom-gold" />
-                          Deal Information
-                        </h3>
-                        <InfoRow label="Deal Title" value={result.deal_title} />
-                        <InfoRow label="Deal Type" value={result.deal_type} />
-                        <InfoRow label="Deal Value" value={result.deal_value} />
-                        <InfoRow label="Governing Law" value={result.governing_law} />
-                        <InfoRow label="Jurisdiction" value={result.jurisdiction} />
-                        <InfoRow label="Signing Date" value={result.signing_date} />
-                        <InfoRow label="Closing Date" value={result.closing_date} />
+                      {/* Transaction Parameters */}
+                      <div className="card p-5 space-y-3 bg-harvey-charcoal">
+                        <div className="flex items-center gap-2 pb-2 border-b border-harvey-borderSubtle">
+                          <DollarSign className="w-3.5 h-3.5 text-harvey-gold" />
+                          <h3 className="font-serif text-base font-normal text-harvey-ivory">Transaction Structure</h3>
+                        </div>
+                        <div className="divide-y divide-harvey-borderSubtle">
+                          <TermRow label="Deal Title" value={result.deal_title} />
+                          <TermRow label="Transaction Type" value={result.deal_type} />
+                          <TermRow label="Consideration" value={result.deal_value} />
+                          <TermRow label="Governing Law" value={result.governing_law} />
+                          <TermRow label="Jurisdiction" value={result.jurisdiction} />
+                          <TermRow label="Execution Date" value={result.signing_date} />
+                          <TermRow label="Target Closing" value={result.closing_date} />
+                        </div>
                       </div>
 
                       {/* Recommendations */}
                       {result.key_recommendations?.length > 0 && (
-                        <div className="card p-5">
-                          <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
-                            <CheckSquare className="w-4 h-4 text-green-400" />
-                            Key Recommendations
-                          </h3>
+                        <div className="card p-5 space-y-3 bg-harvey-charcoal">
+                          <div className="flex items-center gap-2 pb-2 border-b border-harvey-borderSubtle">
+                            <CheckSquare className="w-3.5 h-3.5 text-harvey-emerald" />
+                            <h3 className="font-serif text-base font-normal text-harvey-ivory">Strategic Counsel Recommendations</h3>
+                          </div>
                           <ul className="space-y-2">
                             {result.key_recommendations.map((rec, i) => (
-                              <li key={i} className="flex items-start gap-2 text-xs text-axiom-textDim">
-                                <span className="w-4 h-4 rounded-full bg-axiom-accent/20 text-axiom-accent text-[9px] flex items-center justify-center flex-shrink-0 mt-0.5 font-bold">
+                              <li key={i} className="flex items-start gap-2.5 text-xs text-harvey-textDim leading-relaxed">
+                                <span className="w-4 h-4 rounded bg-harvey-surface border border-harvey-border text-harvey-ivory text-[10px] flex items-center justify-center flex-shrink-0 mt-0.5 font-mono">
                                   {i + 1}
                                 </span>
-                                <span className="leading-relaxed">{rec}</span>
+                                <span>{rec}</span>
                               </li>
                             ))}
                           </ul>
@@ -324,41 +363,43 @@ export default function MAndA() {
               {/* ── PARTIES TAB ──────────────────────────────────── */}
               {activeTab === 'parties' && result && (
                 <div className="space-y-4 animate-fade-in">
-                  <div className="card p-5">
-                    <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
-                      <Users className="w-4 h-4 text-axiom-accent" />
-                      Deal Parties
-                    </h3>
+                  <div className="card p-5 space-y-4 bg-harvey-charcoal">
+                    <div className="flex items-center gap-2 pb-2 border-b border-harvey-borderSubtle">
+                      <Users className="w-3.5 h-3.5 text-harvey-muted" />
+                      <h3 className="font-serif text-base font-normal text-harvey-ivory">Contracting Entities & Roles</h3>
+                    </div>
+
                     {result.parties?.length > 0 ? (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {result.parties.map((party, i) => (
-                          <div key={i} className="flex items-center gap-3 bg-axiom-surface border border-axiom-border rounded-lg px-4 py-3">
-                            <div className="w-8 h-8 rounded-full bg-axiom-accent/10 border border-axiom-accent/20 flex items-center justify-center text-xs font-bold text-axiom-accent">
-                              {party.name?.[0]?.toUpperCase() || '?'}
+                          <div key={i} className="p-3 rounded bg-harvey-surface border border-harvey-border flex items-center gap-3">
+                            <div className="w-7 h-7 rounded border border-harvey-borderSubtle bg-harvey-charcoal flex items-center justify-center font-serif text-xs text-harvey-ivory">
+                              {party.name?.[0]?.toUpperCase() || 'P'}
                             </div>
-                            <div>
-                              <p className="text-sm font-medium text-axiom-text">{party.name}</p>
-                              <p className="text-xs text-axiom-muted">{party.role}</p>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-xs font-medium text-harvey-ivory truncate">{party.name}</p>
+                              <p className="text-[10px] text-harvey-muted uppercase tracking-wider font-mono">{party.role}</p>
                             </div>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-xs text-axiom-muted">No party information extracted.</p>
+                      <p className="text-xs text-harvey-muted">No explicit party roles detected in excerpts.</p>
                     )}
                   </div>
 
-                  <div className="card p-5">
-                    <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
-                      <DollarSign className="w-4 h-4 text-axiom-gold" />
-                      Deal Terms Summary
-                    </h3>
-                    <InfoRow label="Deal Type" value={result.deal_type} />
-                    <InfoRow label="Consideration" value={result.deal_value} />
-                    <InfoRow label="Governing Law" value={result.governing_law} />
-                    <InfoRow label="Jurisdiction" value={result.jurisdiction} />
-                    <InfoRow label="Signing Date" value={result.signing_date} />
-                    <InfoRow label="Target Closing" value={result.closing_date} />
+                  <div className="card p-5 space-y-3 bg-harvey-charcoal">
+                    <div className="flex items-center gap-2 pb-2 border-b border-harvey-borderSubtle">
+                      <Scale className="w-3.5 h-3.5 text-harvey-muted" />
+                      <h3 className="font-serif text-base font-normal text-harvey-ivory">Core Legal Foundations</h3>
+                    </div>
+                    <div className="divide-y divide-harvey-borderSubtle">
+                      <TermRow label="Governing Law" value={result.governing_law} />
+                      <TermRow label="Jurisdiction" value={result.jurisdiction} />
+                      <TermRow label="Consideration" value={result.deal_value} />
+                      <TermRow label="Signing Date" value={result.signing_date} />
+                      <TermRow label="Closing Date" value={result.closing_date} />
+                    </div>
                   </div>
                 </div>
               )}
@@ -366,12 +407,12 @@ export default function MAndA() {
               {/* ── CLAUSES TAB ──────────────────────────────────── */}
               {activeTab === 'clauses' && result && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in">
-                  <ClauseList title="Conditions Precedent" items={result.conditions_precedent} icon={CheckSquare} />
-                  <ClauseList title="Representations & Warranties" items={result.representations_warranties} icon={Scale} />
-                  <ClauseList title="Indemnification Provisions" items={result.indemnification_provisions} icon={AlertTriangle} />
-                  <ClauseList title="Non-Compete Obligations" items={result.non_compete_clauses} icon={X} />
-                  <ClauseList title="MAC Clauses" items={result.mac_clauses} icon={AlertTriangle} />
-                  <ClauseList title="Termination Rights" items={result.termination_rights} icon={X} />
+                  <ClauseCard title="Conditions Precedent" items={result.conditions_precedent} icon={CheckSquare} />
+                  <ClauseCard title="Representations & Warranties" items={result.representations_warranties} icon={Scale} />
+                  <ClauseCard title="Indemnification & Caps" items={result.indemnification_provisions} icon={AlertTriangle} />
+                  <ClauseCard title="Non-Compete & Restrictive Covenants" items={result.non_compete_clauses} icon={Shield} />
+                  <ClauseCard title="Material Adverse Change (MAC)" items={result.mac_clauses} icon={AlertTriangle} />
+                  <ClauseCard title="Termination Rights" items={result.termination_rights} icon={List} />
                 </div>
               )}
 
@@ -384,9 +425,10 @@ export default function MAndA() {
                       overallRisk={result.overall_risk_level || 'UNKNOWN'}
                     />
                   ) : (
-                    <div className="card p-8 flex flex-col items-center text-axiom-muted gap-2">
-                      <AlertTriangle className="w-8 h-8" />
-                      <p className="text-sm">Run analysis to see risk flags.</p>
+                    <div className="card p-12 text-center text-harvey-muted space-y-2 bg-harvey-charcoal">
+                      <AlertTriangle className="w-8 h-8 mx-auto text-harvey-border" />
+                      <p className="font-serif text-sm text-harvey-ivory">Risk Assessment Pending</p>
+                      <p className="text-xs text-harvey-muted">Run analysis to generate the liability ledger.</p>
                     </div>
                   )}
                 </div>
@@ -394,19 +436,11 @@ export default function MAndA() {
 
               {/* ── CHAT TAB ─────────────────────────────────────── */}
               {activeTab === 'chat' && (
-                <div className="card overflow-hidden h-[500px] animate-fade-in">
+                <div className="card overflow-hidden h-[540px] animate-fade-in">
                   <ChatInterface
                     documentId={selectedDocument.id}
                     documentName={selectedDocument.original_name}
                   />
-                </div>
-              )}
-
-              {/* No result placeholder for non-overview tabs */}
-              {!result && activeTab !== 'overview' && activeTab !== 'chat' && (
-                <div className="card p-8 flex flex-col items-center text-axiom-muted gap-2">
-                  <PlayCircle className="w-8 h-8 text-axiom-border" />
-                  <p className="text-sm">Run analysis to view this section.</p>
                 </div>
               )}
             </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { FileText, Briefcase, CheckCircle, AlertCircle, Clock, Loader2 } from 'lucide-react'
+import { FileText, Briefcase, CheckCircle2, AlertCircle, Clock, Loader2, ArrowRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { analysisApi, documentsApi } from '../lib/api'
 
 export default function Reports() {
@@ -27,10 +28,10 @@ export default function Reports() {
   }, [])
 
   const statusIcon = (status) => {
-    if (status === 'done') return <CheckCircle className="w-4 h-4 text-green-400" />
-    if (status === 'running') return <Loader2 className="w-4 h-4 text-axiom-accent animate-spin" />
-    if (status === 'error') return <AlertCircle className="w-4 h-4 text-red-400" />
-    return <Clock className="w-4 h-4 text-axiom-muted" />
+    if (status === 'done') return <CheckCircle2 className="w-3.5 h-3.5 text-harvey-emerald" />
+    if (status === 'running') return <Loader2 className="w-3.5 h-3.5 text-harvey-ivory animate-spin" />
+    if (status === 'error') return <AlertCircle className="w-3.5 h-3.5 text-harvey-coral" />
+    return <Clock className="w-3.5 h-3.5 text-harvey-muted" />
   }
 
   const riskBadge = (level) => {
@@ -41,53 +42,77 @@ export default function Reports() {
   }
 
   return (
-    <div className="max-w-5xl space-y-6 animate-fade-in">
-      <div className="card overflow-hidden">
-        <div className="px-6 py-4 border-b border-axiom-border flex items-center gap-2">
-          <FileText className="w-4 h-4 text-axiom-accent" />
-          <h2 className="text-sm font-semibold text-white">Analysis Reports</h2>
-          <span className="ml-auto text-xs text-axiom-muted bg-axiom-border px-1.5 py-0.5 rounded-full">{analyses.length}</span>
+    <div className="max-w-5xl mx-auto space-y-6 font-sans animate-fade-in">
+      <div className="flex items-baseline justify-between">
+        <div>
+          <h2 className="text-2xl font-serif text-harvey-ivory font-normal">Compliance & Diligence Audits</h2>
+          <p className="text-xs text-harvey-muted mt-0.5">Historical record of all evaluated M&A agreements and liability matrices</p>
         </div>
+        <span className="text-xs font-mono text-harvey-muted bg-harvey-surface px-2.5 py-1 rounded border border-harvey-borderSubtle">
+          {analyses.length} Audits
+        </span>
+      </div>
 
+      <div className="card overflow-hidden bg-harvey-charcoal">
         {loading ? (
           <div className="p-6 space-y-3">
-            {[1, 2, 3].map(i => <div key={i} className="skeleton h-16 rounded-xl" />)}
+            {[1, 2, 3].map(i => <div key={i} className="skeleton h-14 rounded" />)}
           </div>
         ) : analyses.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-axiom-muted gap-2">
-            <Briefcase className="w-10 h-10 text-axiom-border" />
-            <p className="text-sm font-medium">No reports yet</p>
-            <p className="text-xs">Upload an M&A document and run an analysis to generate your first report.</p>
+          <div className="flex flex-col items-center justify-center py-16 text-center text-harvey-muted space-y-2">
+            <Briefcase className="w-8 h-8 text-harvey-border" />
+            <p className="font-serif text-sm text-harvey-ivory">No Historical Audits Recorded</p>
+            <p className="text-xs text-harvey-muted max-w-sm">
+              Upload an agreement in the M&A suite and trigger due diligence to generate audit entries.
+            </p>
+            <div className="pt-2">
+              <Link to="/ma" className="btn-secondary text-xs">
+                Go to M&A Suite
+              </Link>
+            </div>
           </div>
         ) : (
-          <div className="divide-y divide-axiom-border">
+          <div className="divide-y divide-harvey-borderSubtle">
             {analyses.map(analysis => (
-              <div key={analysis.id} className="px-6 py-4 flex items-center gap-4 hover:bg-axiom-card/40 transition-colors">
-                <div className="w-9 h-9 rounded-xl bg-axiom-accent/10 border border-axiom-accent/20 flex items-center justify-center flex-shrink-0">
-                  <Briefcase className="w-4 h-4 text-axiom-accent" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-axiom-text truncate">{analysis.document_name}</p>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-xs text-axiom-muted">
-                      {new Date(analysis.created_at).toLocaleString()}
-                    </span>
-                    {analysis.result?.deal_type && (
-                      <span className="text-xs text-axiom-muted bg-axiom-border px-1.5 py-0.5 rounded">
-                        {analysis.result.deal_type}
-                      </span>
-                    )}
+              <div key={analysis.id} className="px-6 py-4 flex items-center justify-between gap-4 hover:bg-harvey-surface/60 transition-colors">
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className="w-8 h-8 rounded border border-harvey-border flex items-center justify-center bg-harvey-surface flex-shrink-0">
+                    <FileText className="w-4 h-4 text-harvey-muted" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-medium text-harvey-ivory truncate">{analysis.document_name}</p>
+                    <div className="flex items-center gap-2 mt-0.5 text-[11px] text-harvey-muted">
+                      <span>{new Date(analysis.created_at).toLocaleString()}</span>
+                      {analysis.result?.deal_type && (
+                        <>
+                          <span>·</span>
+                          <span className="bg-harvey-surface text-harvey-textDim px-1.5 py-0.2 rounded font-mono text-[10px] border border-harvey-borderSubtle">
+                            {analysis.result.deal_type}
+                          </span>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
+
+                <div className="flex items-center gap-4 flex-shrink-0">
                   {analysis.result?.overall_risk_level && riskBadge(analysis.result.overall_risk_level)}
-                  {statusIcon(analysis.status)}
-                  <div className="text-right">
-                    <p className="text-xs capitalize text-axiom-muted">{analysis.status}</p>
-                    {analysis.result?.risk_flags?.length >= 0 && (
-                      <p className="text-xs text-axiom-muted">{analysis.result.risk_flags.length} risks found</p>
-                    )}
+                  <div className="flex items-center gap-1.5">
+                    {statusIcon(analysis.status)}
+                    <span className="text-[11px] capitalize text-harvey-muted">{analysis.status}</span>
                   </div>
+                  {analysis.result?.risk_flags?.length >= 0 && (
+                    <span className="text-[11px] text-harvey-muted font-mono hidden sm:inline">
+                      {analysis.result.risk_flags.length} risks
+                    </span>
+                  )}
+                  <Link
+                    to="/ma"
+                    className="btn-ghost p-1.5"
+                    title="View in M&A Suite"
+                  >
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
                 </div>
               </div>
             ))}

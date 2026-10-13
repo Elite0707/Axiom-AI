@@ -9,13 +9,27 @@
   
   html {
     scroll-behavior: smooth;
+    color-scheme: dark;
   }
 
   body {
-    background-color: #0a0b0f;
-    color: #e2e8f0;
-    font-family: 'Inter', system-ui, sans-serif;
+    background-color: #0f0e0d;
+    color: #fafaf9;
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Newsreader', Georgia, serif;
+    letter-spacing: -0.015em;
+    font-weight: 400;
+  }
+
+  ::selection {
+    background-color: #fafaf9;
+    color: #0f0e0d;
   }
 
   ::-webkit-scrollbar {
@@ -23,68 +37,93 @@
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #111318;
+    background: #151412;
   }
   ::-webkit-scrollbar-thumb {
-    background: #1e2330;
+    background: #38352e;
     border-radius: 3px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #2d3748;
+    background: #524f49;
   }
 }
 
 @layer components {
+  /* Harvey signature cards */
   .card {
-    @apply bg-axiom-card border border-axiom-border rounded-xl shadow-card;
+    @apply bg-harvey-charcoal border border-harvey-border rounded-lg shadow-subtle transition-all duration-200;
   }
 
+  .card-surface {
+    @apply bg-harvey-surface border border-harvey-borderSubtle rounded-lg;
+  }
+
+  /* Harvey signature primary button: Ivory fill with ink text */
   .btn-primary {
-    @apply bg-axiom-accent hover:bg-axiom-accentHover text-white font-medium px-4 py-2 rounded-lg 
-           transition-all duration-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply bg-harvey-ivory hover:bg-harvey-cream text-harvey-ink font-medium px-4 py-2 rounded 
+           transition-all duration-150 flex items-center justify-center gap-2 
+           text-xs tracking-tight shadow-sm disabled:opacity-40 disabled:cursor-not-allowed;
   }
 
+  /* Harvey signature secondary button: Subtle charcoal outline */
   .btn-secondary {
-    @apply bg-axiom-surface hover:bg-axiom-border text-axiom-text font-medium px-4 py-2 rounded-lg 
-           border border-axiom-border transition-all duration-200 flex items-center gap-2;
+    @apply bg-harvey-surface hover:bg-harvey-card text-harvey-ivory font-medium px-3.5 py-2 rounded 
+           border border-harvey-border hover:border-harvey-muted/50 transition-all duration-150 
+           flex items-center justify-center gap-2 text-xs tracking-tight;
+  }
+
+  /* Harvey signature ghost button */
+  .btn-ghost {
+    @apply text-harvey-muted hover:text-harvey-ivory hover:bg-harvey-surface px-2.5 py-1.5 rounded 
+           transition-colors duration-150 flex items-center gap-1.5 text-xs;
   }
 
   .btn-danger {
-    @apply bg-red-500/10 hover:bg-red-500/20 text-red-400 font-medium px-4 py-2 rounded-lg 
-           border border-red-500/20 transition-all duration-200 flex items-center gap-2;
+    @apply bg-harvey-coral/10 hover:bg-harvey-coral/20 text-harvey-coral font-medium px-3.5 py-1.5 rounded 
+           border border-harvey-coral/30 transition-all duration-150 flex items-center gap-1.5 text-xs;
   }
 
+  /* Minimalist legal risk badges */
   .badge-high {
-    @apply bg-red-500/15 text-red-400 border border-red-500/25 text-xs font-semibold px-2 py-0.5 rounded-full;
+    @apply bg-harvey-coral/10 text-harvey-coral border border-harvey-coral/30 text-[10px] font-medium tracking-wider uppercase px-2 py-0.5 rounded;
   }
   .badge-medium {
-    @apply bg-amber-500/15 text-amber-400 border border-amber-500/25 text-xs font-semibold px-2 py-0.5 rounded-full;
+    @apply bg-harvey-amber/10 text-harvey-amber border border-harvey-amber/30 text-[10px] font-medium tracking-wider uppercase px-2 py-0.5 rounded;
   }
   .badge-low {
-    @apply bg-green-500/15 text-green-400 border border-green-500/25 text-xs font-semibold px-2 py-0.5 rounded-full;
+    @apply bg-harvey-emerald/10 text-harvey-emerald border border-harvey-emerald/30 text-[10px] font-medium tracking-wider uppercase px-2 py-0.5 rounded;
   }
   .badge-unknown {
-    @apply bg-gray-500/15 text-gray-400 border border-gray-500/25 text-xs font-semibold px-2 py-0.5 rounded-full;
+    @apply bg-harvey-border/40 text-harvey-muted border border-harvey-border text-[10px] font-medium tracking-wider uppercase px-2 py-0.5 rounded;
+  }
+  .badge-tag {
+    @apply bg-harvey-surface text-harvey-textDim border border-harvey-borderSubtle text-[11px] font-normal px-2 py-0.5 rounded;
   }
 
+  /* Harvey signature highlighter pill */
+  .badge-highlight {
+    @apply bg-harvey-highlighter text-harvey-highlighterText text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded;
+  }
+
+  /* Input fields */
   .input {
-    @apply bg-axiom-surface border border-axiom-border text-axiom-text rounded-lg px-3 py-2 
-           focus:outline-none focus:ring-2 focus:ring-axiom-accent/50 focus:border-axiom-accent
-           placeholder:text-axiom-muted transition-all duration-200 w-full;
+    @apply bg-harvey-obsidian border border-harvey-border text-harvey-ivory rounded px-3 py-2 
+           focus:outline-none focus:border-harvey-ivory/60 focus:ring-1 focus:ring-harvey-ivory/20
+           placeholder:text-harvey-muted/60 transition-all duration-150 w-full text-xs font-sans;
   }
 
   .skeleton {
-    @apply animate-pulse bg-axiom-border rounded;
-    background: linear-gradient(90deg, #1e2330 25%, #2d3748 50%, #1e2330 75%);
+    @apply animate-pulse bg-harvey-border/40 rounded;
+    background: linear-gradient(90deg, #1f1d1a 25%, #2b2824 50%, #1f1d1a 75%);
     background-size: 200% 100%;
     animation: shimmer 2s infinite;
   }
 
   .section-title {
-    @apply text-xs font-semibold text-axiom-muted uppercase tracking-widest;
+    @apply text-[10px] font-medium text-harvey-muted uppercase tracking-[0.12em];
   }
 
   .stat-card {
-    @apply card p-4 flex flex-col gap-1;
+    @apply card p-4 flex flex-col justify-between;
   }
 }
